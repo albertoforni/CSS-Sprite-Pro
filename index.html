@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width">
+
+    <link href='https://fonts.googleapis.com/css?family=Raleway:400,300,700' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css" />
+    <link href="css/codeStyle.css" rel="stylesheet" type="text/css">
+    <link rel="stylesheet" href="css/guiders.css" type="text/css" />
+    <link rel="stylesheet" href="css/main.css">
+
+    <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+</head>
+<body>
+<!--[if lt IE 7]>
+<p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+<![endif]-->
+
+<!-- page content -->
+<div class="row topBar"></div>
+<div class="container">
+    <header class="row topHeader">
+        <div class="col4"><h1><i class="home"></i>CSS Sprite Pro</h1></div>
+        <ul class="col6 offset2">
+            <li>
+                <a class="hidden" href="https://twitter.com/intent/user?screen_name=albertoforni" target="_blank">@albertoforni</a>
+                <a class="hidden" href="https://twitter.com/intent/user?screen_name=SaraMichelazzo" target="_blank">@SaraMichelazzo</a>
+                <span class="menuElement">follow us</span>
+            </li>
+            <li><a href="https://www.gittip.com/albertoforni" target="_blank">donate</a></li>
+            <li id="help"><a href="">help</a></li>
+        </ul>
+    </header>
+    <div class="row topArea">
+        <div id="messagesContainer" class="col8">
+            <div id="messages"><span class="title">{ Message }</span></div>
+        </div>
+        <section id="actions" class="col4">
+            <a href="" id="downloadLink" download="" class="downloadLink">Download</a>
+        </section>
+    </div>
+    <section id="mainSection" class="row mainSection">
+        <div class="row">
+            <div class="col8 actionsButtons canvasActions">
+                <span id="fit">Fit</span>
+                <span id="convert">Convert</span>
+                <span id="clear">Clear</span>
+            </div>
+            <div class="col4 actionsButtons">
+                <span id="copyAll" data-clipboard-target="clipboard_text" title="Click to copy to clipboard.">Copy All</span>
+            </div>
+        </div>
+        <div class="row">
+            <section class="col8 canvasContainer">
+                <div class="canvasBackground"><span class="title">Drag & Drop Icons</span></div>
+                <canvas id="prevArea" width="600" height="400">
+                    <p>Your browser does not support html5 canvas</p>
+                </canvas>
+                <p class="canvasUpdates hidden"></p>
+            </section>
+            <aside class="col4" id="codeArea">
+                <span class="title">Get Code</span>
+                <ul id="codeStyle" class="selectCode close">
+                    <li data-value="css" class="selected">css</li>
+                    <li data-value="sass">Sass</li>
+                    <li data-value="scss">Scss</li>
+                    <li data-value="less">less</li>
+                </ul>
+                <span class="placeholder">{ }</span>
+                <pre id="clipboard_text" class="hidden"><code></code></pre>
+            </aside>
+        </div>
+    </section>
+    <footer class="row" id="mainFooter">
+        <div class="row" id="goTop"><span class="offset11 col1 topLink"></span></div>
+        <div class="row bottomFooter">
+            <div class="offset9 col2">Made in Italy with love</div>
+            <div class="col1 caretContainer"><span class="caret"></span></div>
+        </div>
+    </footer>
+</div>
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.1/jquery.min.js"></script>
+<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+
+<script src="js/plugins.js"></script>
+<script src="js/vendor/handlebars.js"></script>
+<script src="js/vendor/rainbow.min.js"></script>
+<script src="js/vendor/language/generic.js"></script>
+<script src="js/vendor/language/css.js"></script>
+<script src="js/vendor/ZeroClipboard.min.js"></script>
+<script src="js/vendor/underscore.min.js"></script>
+<script src="js/vendor/guiders.js"></script>
+<script src="js/guiders.js"></script>
+
+<script src="js/icon.js"></script>
+<script src="js/app.js"></script>
+
+<script>
+    var message = new Message({area: "#messages", title: "#messages .title", mode: "debug"});
+
+    var app = new App({
+        canvas: {
+            area: "#prevArea",
+            background: ".canvasContainer .canvasBackground",
+            resizeCallback: function (e,ui) {
+                var $updateArea = $(".canvasUpdates");
+                if ($updateArea.hasClass("hidden")) {
+                    $updateArea.removeClass("hidden").hide().fadeIn();
+                }
+                $updateArea.text("width: " + ui.size.width + ", height: " + ui.size.height);
+            },
+            stopCallback: function (e,ui) {
+                var $updateArea = $(".canvasUpdates");
+                $updateArea.fadeOut(400, function() {
+                    $(this).addClass("hidden");
+                });
+            }
+        },
+        code: {
+            area: "#codeArea",
+            code: "#codeArea code",
+            filter: ".selected",
+            data: "value",
+            format: "#codeStyle"
+        },
+        download: {
+            anchor: "#downloadLink",
+            fileName: "cssspritepro.png",
+            copyAll: "#copyAll"
+        },
+        buttons: {
+            fit:    "#fit",
+            convert: "#convert",
+            clear: "#clear"
+        },
+        reRenderCallback: function (e, ui) {
+            //graphical settings
+            var widthChange = ui.size.width - ui.originalSize.width
+            var heightChange = ui.size.height - ui.originalSize.height
+
+            var canvasBackground = ui.element.closest(".canvasContainer").find(".canvasBackground")
+            canvasBackground.width(canvasBackground.width() + widthChange)
+            canvasBackground.height(canvasBackground.height() + heightChange)
+        },
+        iconOnloadCallback: function () {
+            var $CodePlaceholder =  $("#codeArea .placeholder");
+            var $CodeElements = $("#codeArea pre, #copyAll");
+            if (!$CodePlaceholder.hasClass("hidden")) {
+                $CodePlaceholder.addClass("hidden")
+                $CodeElements.removeClass("hidden")
+            }
+        }
+    });
+
+
+    $(document).ready(function() {
+
+        /* -------------
+         Get Code
+         ---------------- */
+
+        var $elements = $(".selectCode li");
+
+        var showHideElements = function(e) {
+            e.stopPropagation();
+            e.preventDefault();
+
+            if ($elements.closest(".selectCode").hasClass("close")) {
+                // I want to select
+                $elements.closest(".selectCode").removeClass("close");
+
+                $elements.slideDown();
+            }
+            else {
+                // I've selected an Item
+                $elements.closest(".selectCode").addClass("close");
+
+                $elements.removeClass("selected");
+                $(this).addClass("selected");
+                $(this).trigger("formatCodeSelected");
+
+                $elements.not(this).slideUp();
+            }
+        }
+
+        $elements.on("click", showHideElements);
+        /* End Get Code */
+
+        /* -------------
+         Top Menu
+         ---------------- */
+        var time = 400;
+        var $menuElements = $(".menuElement");
+        var showHideMenuElements = function($menuElement) {
+            if (!$menuElement.closest("li").hasClass("open")) {
+                //show element
+                $menuElement.siblings().removeClass("hidden").hide().slideDown(time, function() {
+                    $menuElement.closest("li").addClass("open");
+
+                    $("body").on("click.menuElement", function() {
+                        //hide elements
+                        $(this).off(".menuElement");
+                        $menuElements.each(function() {
+                            var $menuElement = $(this);
+                            $menuElement.siblings().slideUp(time, function() {
+                                $menuElement.siblings().addClass("hidden");
+                                $menuElement.closest("li").removeClass("open");
+                            });
+                        });
+                    });
+                });
+            }
+            else {
+                //hide element
+                $menuElement.siblings().slideUp(time, function() {
+                    $menuElement.siblings().addClass("hidden");
+                    $menuElement.closest("li").removeClass("open");
+                });
+            }
+        };
+
+        $menuElements.click(function(e) {
+            e.stopPropagation();
+            e.preventDefault();
+
+            showHideMenuElements($(this));
+        });
+
+        $("#help").click(function(e){
+            e.stopPropagation();
+            e.preventDefault();
+
+            guiders.show("guider1");
+        });
+
+        /* End Top Menu */
+    });
+
+</script>
+
+<!--
+<script>
+var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+s.parentNode.insertBefore(g,s)}(document,'script'));
+</script>
+-->
+</body>
+</html>

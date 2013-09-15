@@ -1,0 +1,57 @@
+//clearfix mixin
+@mixin clearfix() {
+  *zoom: 1;
+  &:before, &:after {
+    content: " ";
+    display: table;
+  }
+  &:after {
+    clear: both;
+  }
+}
+
+// Mixin that create the layour cols
+@mixin createLayout($rowWidth: 100%, $cols: 12, $gutter: 1%, $maxWidth: null) {
+
+  //determino la larghezza totale di tutte le colonne
+  $colsWidth: $rowWidth - $gutter * ($cols - 1);
+
+  .container {
+    max-width: $maxWidth;
+    margin: 0 auto;
+  }
+
+  .row {
+    @include clearfix();
+    width: $rowWidth;
+    margin: 0 auto;
+  }
+
+  .row [class*="col"] {
+    margin-left: $gutter;
+    min-height: 30px;
+    float: left;
+    @include box-sizing(border-box);
+  }
+
+  .row [class*="col"]:first-child {
+    margin-left: 0;
+  }
+  
+  .row {
+    @for $i from 1 through $cols {
+      .col#{$i} {
+        width: $colsWidth / $cols * $i + $gutter * ($i - 1); 
+      }
+    }
+
+    @for $i from 1 through ($cols - 1) {
+      .offset#{$i} {
+        margin-left: $colsWidth / $cols * $i + $gutter * ($i + 1);
+      }
+      .offset#{$i}:first-child {
+        margin-left: $colsWidth / $cols * $i + $gutter * ($i);
+      }
+    }
+  }
+}
