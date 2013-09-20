@@ -373,4 +373,23 @@ if (!window.atob) window.atob = base64decode;
 
 })();
 
+(function($){
+    $.fn.scrollView = function (params) {
+        var options = {
+            container: $('html, body'),
+            duration: 400,
+            easing: "swing",
+            complete: undefined
+        };
+
+        params = $.extend(options, params);
+
+        return this.each(function () {
+            params.container.animate({
+                scrollTop: $(this).offset().top
+            }, params.duration, params.easing, params.complete);
+        });
+    }
+})(jQuery)
+
 

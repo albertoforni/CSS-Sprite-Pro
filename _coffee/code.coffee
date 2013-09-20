@@ -115,6 +115,16 @@ class Code
     Rainbow.color html, "css", (highlighted_code) ->
       $code.append(highlighted_code)
 
+  reRender: () ->
+    $code[0].innerHTML = ""
+    firstRowShown = false
+    html = buildHtml(codeStack)
+
+    #highlight code and when you're done display it
+    #now I hardcoded "css" theme
+    Rainbow.color html, "css", (highlighted_code) ->
+      $code.append(highlighted_code)
+
   getArea: ->
     @$area
 
@@ -145,6 +155,23 @@ class Code
     else
       message.setMessage("code", "You tried to clear the the code area, but you're not sure, right!?", "debug")
       return false
+
+  highlightElement: (icon) ->
+    $code.find(".class").each () ->
+      $icon = $(@)
+      if icon.name == $icon.text().replace(".","")
+        $icon.scrollView
+          container: $area
+          complete: ->
+            $icon.effect("highlight")
+
+        return
+
+  deteleIcon: (icon) ->
+    codeStack = _.reject codeStack, (currentIcon) ->
+      currentIcon.name == icon.name
+
+    @reRender()
 
   #
   # private instance methods

@@ -78,6 +78,14 @@ class Canvas
   getContext: ->
     context
 
+  getMousePos: (e) ->
+    rect = $area[0].getBoundingClientRect()
+    return {
+      x: e.clientX - rect.left
+      y: e.clientY - rect.top
+    }
+
+
   place: (width, height) ->
     space.place(width,height)
 
@@ -164,3 +172,14 @@ class Canvas
       height: newBackgroundHeight
 
     message.setMessage("Canvas", "Now your icons are perfectly fitted into the image", "production")
+
+  deleteIcon: (icon) ->
+    #remove icon from adding array
+    addingArray = _.reject addingArray, (currentIcon) ->
+      currentIcon.name == icon.name
+
+    #delete from space
+    space.deleteElement(icon.left, icon.top, icon.width, icon.height)
+
+    #delete from canvas
+    context.clearRect(icon.left, icon.top, icon.width, icon.height)

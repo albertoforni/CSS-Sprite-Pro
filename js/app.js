@@ -38,7 +38,26 @@
       canvas.getArea().on({
         dragover: fileDrag,
         dragleave: fileDrag,
-        drop: parseFile
+        drop: parseFile,
+        click: function(e) {
+          var icon, mousePosition, selectedIcon, _i, _len, _ref, _ref1;
+          mousePosition = canvas.getMousePos(e);
+          for (_i = 0, _len = icons.length; _i < _len; _i++) {
+            icon = icons[_i];
+            if ((icon.left <= (_ref = mousePosition.x) && _ref <= icon.left + icon.width) && (icon.top <= (_ref1 = mousePosition.y) && _ref1 <= icon.top + icon.height)) {
+              selectedIcon = icon;
+              break;
+            }
+          }
+          if (selectedIcon) {
+            icons = _.reject(icons, function(currentIcon) {
+              return currentIcon.name === selectedIcon.name;
+            });
+            canvas.deleteIcon(selectedIcon);
+            code.deteleIcon(selectedIcon);
+            return message.setMessage("app", "Icon " + selectedIcon.name + " deleted", "production");
+          }
+        }
       });
       $(document).on("rerender", function(e, ui) {
         var icon, newPosition, _i, _len;
@@ -227,6 +246,15 @@
       return context;
     };
 
+    Canvas.prototype.getMousePos = function(e) {
+      var rect;
+      rect = $area[0].getBoundingClientRect();
+      return {
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      };
+    };
+
     Canvas.prototype.place = function(width, height) {
       return space.place(width, height);
     };
@@ -306,6 +334,14 @@
         height: newBackgroundHeight
       });
       return message.setMessage("Canvas", "Now your icons are perfectly fitted into the image", "production");
+    };
+
+    Canvas.prototype.deleteIcon = function(icon) {
+      addingArray = _.reject(addingArray, function(currentIcon) {
+        return currentIcon.name === icon.name;
+      });
+      space.deleteElement(icon.left, icon.top, icon.width, icon.height);
+      return context.clearRect(icon.left, icon.top, icon.width, icon.height);
     };
 
     return Canvas;
@@ -422,6 +458,16 @@
       });
     };
 
+    Code.prototype.reRender = function() {
+      var html;
+      $code[0].innerHTML = "";
+      firstRowShown = false;
+      html = buildHtml(codeStack);
+      return Rainbow.color(html, "css", function(highlighted_code) {
+        return $code.append(highlighted_code);
+      });
+    };
+
     Code.prototype.getArea = function() {
       return this.$area;
     };
@@ -454,6 +500,28 @@
         message.setMessage("code", "You tried to clear the the code area, but you're not sure, right!?", "debug");
         return false;
       }
+    };
+
+    Code.prototype.highlightElement = function(icon) {
+      return $code.find(".class").each(function() {
+        var $icon;
+        $icon = $(this);
+        if (icon.name === $icon.text().replace(".", "")) {
+          $icon.scrollView({
+            container: $area,
+            complete: function() {
+              return $icon.effect("highlight");
+            }
+          });
+        }
+      });
+    };
+
+    Code.prototype.deteleIcon = function(icon) {
+      codeStack = _.reject(codeStack, function(currentIcon) {
+        return currentIcon.name === icon.name;
+      });
+      return this.reRender();
     };
 
     buildHtml = function(elements) {
@@ -691,6 +759,15 @@
         width: spaceWidth,
         height: spaceHeight
       };
+    };
+
+    Space.prototype.deleteElement = function(left, top, width, height) {
+      return emptySpaces.unshift({
+        width: width,
+        height: height,
+        top: top,
+        left: left
+      });
     };
 
     return Space;

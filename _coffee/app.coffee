@@ -36,6 +36,23 @@ class App
       dragover: fileDrag
       dragleave: fileDrag
       drop: parseFile
+      click: (e) ->
+        mousePosition = canvas.getMousePos(e)
+
+        for icon in icons
+          if icon.left <= mousePosition.x <= icon.left + icon.width and icon.top <= mousePosition.y <= icon.top + icon.height
+            selectedIcon = icon
+            break
+
+        if selectedIcon
+          #code.highlightElement(selectedIcon)
+          icons = _.reject icons, (currentIcon) ->
+            currentIcon.name == selectedIcon.name
+
+          canvas.deleteIcon(selectedIcon)
+          code.deteleIcon(selectedIcon)
+
+          message.setMessage("app", "Icon #{selectedIcon.name} deleted", "production")
 
     #re-render icons
     $(document).on "rerender", (e, ui) ->

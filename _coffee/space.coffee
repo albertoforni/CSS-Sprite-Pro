@@ -129,3 +129,11 @@ class Space
   getArea: ->
     width: spaceWidth
     height: spaceHeight
+
+  deleteElement: (left, top, width, height) ->
+    #create a new hole in emptySpaces
+    emptySpaces.unshift
+      width: width
+      height: height
+      top: top
+      left: left
