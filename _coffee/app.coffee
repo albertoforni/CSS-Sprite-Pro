@@ -15,6 +15,8 @@ class App
   code = {} #object that handles icons' code
   icons = [] #array that stores all the icons
 
+  canvasIconTooltip = {} #inside canvas element, holds icon action to be shown on mouse hover. hidden by default
+
   #
   # constructor
   #
@@ -31,12 +33,16 @@ class App
     canvas = new Canvas(params.canvas)
     code = new Code(params.code)
 
+    canvasIconTooltip = params.canvasIconTooltip
+
     #drop icons events
     canvas.getArea().on
       dragover: fileDrag
       dragleave: fileDrag
       drop: parseFile
       click: (e) ->
+        e.stopPropagation()
+
         mousePosition = canvas.getMousePos(e)
 
         for icon in icons
@@ -45,14 +51,20 @@ class App
             break
 
         if selectedIcon
-          #code.highlightElement(selectedIcon)
-          icons = _.reject icons, (currentIcon) ->
-            currentIcon.name == selectedIcon.name
+          code.highlightElement(selectedIcon)
+          canvasIconTooltip.$tooltip.removeClass("hidden").css
+            left: canvasIconTooltip.addToLeft + selectedIcon.left + selectedIcon.width / 2
+            top:  canvasIconTooltip.addToTop + selectedIcon.top + selectedIcon.height
+            width: 150
+            marginLeft: -75
 
-          canvas.deleteIcon(selectedIcon)
-          code.deteleIcon(selectedIcon)
+          canvasIconTooltip.$tooltip.on "click.deleteIcon", canvasIconTooltip.buttons.deleteIcon, ->
+            deleteIcon(selectedIcon)
 
-          message.setMessage("app", "Icon #{selectedIcon.name} deleted", "production")
+          $("body").on "click", ->
+            canvasIconTooltip.$tooltip.off("click")
+            canvasIconTooltip.$tooltip.addClass("hidden")
+            $(@).off("click")
 
     #re-render icons
     $(document).on "rerender", (e, ui) ->
@@ -142,6 +154,15 @@ class App
     canvas.clear(true)
     code.clear(true)
     message.setMessage("app", "Now your project is empty", "production")
+
+  deleteIcon = (icon) ->
+    icons = _.reject icons, (currentIcon) ->
+      currentIcon.name == icon.name
+
+    canvas.deleteIcon(icon)
+    code.deteleIcon(icon)
+
+    message.setMessage("app", "Icon #{icon.name} deleted", "production")
 
   #
   # public static methods

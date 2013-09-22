@@ -111,7 +111,7 @@ ul {
   text-align: center;
   cursor: pointer;
   background-color: $neutralColor2;
-  @include single-transition(all, 400ms, ease-in-out);
+  @include single-transition(all, 200ms, ease-in-out);
   &.hover {
     @include box-shadow(4px -4px 0 0 $neutralColor0);
   }
@@ -341,5 +341,35 @@ footer#mainFooter {
       height: 0;
       width: 0;
     }
+  }
+}
+
+.tooltipButtons {
+  position: absolute;
+  background-color: $neutralColor0;
+  padding: 10px;
+  @include border-radius(5px);
+  border: 2 px solid $neutralColor2;
+  @include box-sizing(border-box);
+  margin-top: 18px;
+  .triangle-up {
+    @include caret(top, bottom, 16px, $neutralColor0);
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    margin-left: -16px;
+  }
+}
+
+.button {
+  @include border-radius(5px);
+  display: block;
+  padding: 5px;
+  color: $neutralColor1;
+  background-color: $mainColor;
+  cursor: pointer;
+  text-align: center;
+  &:hover {
+    @include box-shadow(inset 2px 2px 10px 0px $neutralColor0);
   }
 }

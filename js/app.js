@@ -3,7 +3,7 @@
   var App, Canvas, Code, Message, Space;
 
   App = (function() {
-    var $downloadAnchor, buttons, canvas, clear, code, convert, downloadFileName, fileDrag, fit, iconOnloadCallback, icons, parseFile, reRenderCallback;
+    var $downloadAnchor, buttons, canvas, canvasIconTooltip, clear, code, convert, deleteIcon, downloadFileName, fileDrag, fit, iconOnloadCallback, icons, parseFile, reRenderCallback;
 
     window.App = App;
 
@@ -23,6 +23,8 @@
 
     icons = [];
 
+    canvasIconTooltip = {};
+
     function App(params) {
       var copyAllLink;
       if (!(params && App.checkBrowserCompatibility())) {
@@ -35,12 +37,14 @@
       iconOnloadCallback = params.iconOnloadCallback;
       canvas = new Canvas(params.canvas);
       code = new Code(params.code);
+      canvasIconTooltip = params.canvasIconTooltip;
       canvas.getArea().on({
         dragover: fileDrag,
         dragleave: fileDrag,
         drop: parseFile,
         click: function(e) {
           var icon, mousePosition, selectedIcon, _i, _len, _ref, _ref1;
+          e.stopPropagation();
           mousePosition = canvas.getMousePos(e);
           for (_i = 0, _len = icons.length; _i < _len; _i++) {
             icon = icons[_i];
@@ -50,12 +54,21 @@
             }
           }
           if (selectedIcon) {
-            icons = _.reject(icons, function(currentIcon) {
-              return currentIcon.name === selectedIcon.name;
+            code.highlightElement(selectedIcon);
+            canvasIconTooltip.$tooltip.removeClass("hidden").css({
+              left: canvasIconTooltip.addToLeft + selectedIcon.left + selectedIcon.width / 2,
+              top: canvasIconTooltip.addToTop + selectedIcon.top + selectedIcon.height,
+              width: 150,
+              marginLeft: -75
             });
-            canvas.deleteIcon(selectedIcon);
-            code.deteleIcon(selectedIcon);
-            return message.setMessage("app", "Icon " + selectedIcon.name + " deleted", "production");
+            canvasIconTooltip.$tooltip.on("click.deleteIcon", canvasIconTooltip.buttons.deleteIcon, function() {
+              return deleteIcon(selectedIcon);
+            });
+            return $("body").on("click", function() {
+              canvasIconTooltip.$tooltip.off("click");
+              canvasIconTooltip.$tooltip.addClass("hidden");
+              return $(this).off("click");
+            });
           }
         }
       });
@@ -145,6 +158,15 @@
       canvas.clear(true);
       code.clear(true);
       return message.setMessage("app", "Now your project is empty", "production");
+    };
+
+    deleteIcon = function(icon) {
+      icons = _.reject(icons, function(currentIcon) {
+        return currentIcon.name === icon.name;
+      });
+      canvas.deleteIcon(icon);
+      code.deteleIcon(icon);
+      return message.setMessage("app", "Icon " + icon.name + " deleted", "production");
     };
 
     App.checkBrowserCompatibility = function() {

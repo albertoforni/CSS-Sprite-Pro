@@ -64,6 +64,7 @@
                     <p>Your browser does not support html5 canvas</p>
                 </canvas>
                 <p class="canvasUpdates hidden"></p>
+                <div id="canvasIconsActions" class="tooltipButtons hidden"><span class="triangle-up"></span><span id="deleteIcon" class="button">Delete</span></div>
             </section>
             <aside class="col4" id="codeArea">
                 <span class="title">Get Code</span>
@@ -104,64 +105,71 @@
 <script src="js/app.js"></script>
 
 <script>
-    var message = new Message({area: "#messages", title: "#messages .title", mode: "debug"});
-
-    var app = new App({
-        canvas: {
-            area: "#prevArea",
-            background: ".canvasContainer .canvasBackground",
-            resizeCallback: function (e,ui) {
-                var $updateArea = $(".canvasUpdates");
-                if ($updateArea.hasClass("hidden")) {
-                    $updateArea.removeClass("hidden").hide().fadeIn();
-                }
-                $updateArea.text("width: " + ui.size.width + ", height: " + ui.size.height);
-            },
-            stopCallback: function (e,ui) {
-                var $updateArea = $(".canvasUpdates");
-                $updateArea.fadeOut(400, function() {
-                    $(this).addClass("hidden");
-                });
-            }
-        },
-        code: {
-            area: "#codeArea",
-            code: "#codeArea code",
-            filter: ".selected",
-            data: "value",
-            format: "#codeStyle"
-        },
-        download: {
-            anchor: "#downloadLink",
-            fileName: "cssspritepro.png",
-            copyAll: "#copyAll"
-        },
-        buttons: {
-            fit:    "#fit",
-            convert: "#convert",
-            clear: "#clear"
-        },
-        reRenderCallback: function (e, ui) {
-            //graphical settings
-            var widthChange = ui.size.width - ui.originalSize.width
-            var heightChange = ui.size.height - ui.originalSize.height
-
-            var canvasBackground = ui.element.closest(".canvasContainer").find(".canvasBackground")
-            canvasBackground.width(canvasBackground.width() + widthChange)
-            canvasBackground.height(canvasBackground.height() + heightChange)
-        },
-        iconOnloadCallback: function () {
-            var $CodePlaceholder =  $("#codeArea .placeholder");
-            var $CodeElements = $("#codeArea pre, #copyAll");
-            if (!$CodePlaceholder.hasClass("hidden")) {
-                $CodePlaceholder.addClass("hidden")
-                $CodeElements.removeClass("hidden")
-            }
-        }
-    });
-
-
     $(document).ready(function() {
+        window.message = new Message({area: "#messages", title: "#messages .title", mode: "debug"});
+
+        var app = new App({
+            canvas: {
+                area: "#prevArea",
+                background: ".canvasContainer .canvasBackground",
+                resizeCallback: function (e,ui) {
+                    var $updateArea = $(".canvasUpdates");
+                    if ($updateArea.hasClass("hidden")) {
+                        $updateArea.removeClass("hidden").hide().fadeIn();
+                    }
+                    $updateArea.text("width: " + ui.size.width + ", height: " + ui.size.height);
+                },
+                stopCallback: function (e,ui) {
+                    var $updateArea = $(".canvasUpdates");
+                    $updateArea.fadeOut(400, function() {
+                        $(this).addClass("hidden");
+                    });
+                }
+            },
+            code: {
+                area: "#codeArea",
+                code: "#codeArea code",
+                filter: ".selected",
+                data: "value",
+                format: "#codeStyle"
+            },
+            download: {
+                anchor: "#downloadLink",
+                fileName: "cssspritepro.png",
+                copyAll: "#copyAll"
+            },
+            buttons: {
+                fit:    "#fit",
+                convert: "#convert",
+                clear: "#clear"
+            },
+            canvasIconTooltip: {
+                $tooltip: $("#canvasIconsActions"),
+                addToLeft: 15,
+                addToTop: 50,
+                buttons: {
+                    deleteIcon: "#deleteIcon"
+                }
+            },
+            reRenderCallback: function (e, ui) {
+                //graphical settings
+                var widthChange = ui.size.width - ui.originalSize.width
+                var heightChange = ui.size.height - ui.originalSize.height
+
+                var canvasBackground = ui.element.closest(".canvasContainer").find(".canvasBackground")
+                canvasBackground.width(canvasBackground.width() + widthChange)
+                canvasBackground.height(canvasBackground.height() + heightChange)
+            },
+            iconOnloadCallback: function () {
+                var $CodePlaceholder =  $("#codeArea .placeholder");
+                var $CodeElements = $("#codeArea pre, #copyAll");
+                if (!$CodePlaceholder.hasClass("hidden")) {
+                    $CodePlaceholder.addClass("hidden")
+                    $CodeElements.removeClass("hidden")
+                }
+            }
+        });
+
 
         /* -------------
          Get Code
