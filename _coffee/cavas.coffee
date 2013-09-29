@@ -85,13 +85,9 @@ class Canvas
   place: (width, height) ->
     space.place(width,height)
 
-  clear: (sure) ->
-    if sure is true
-      space.clear(sure,width,height)
-      context.clearRect(0, 0, width, height)
-    else
-      message.setMessage("canvas", "You tried to clear the the canvas area, but you're not sure, right!?", "debug")
-      return false
+  clear: () ->
+    space.clear(width,height)
+    context.clearRect(0, 0, width, height)
 
   drawImage: (IconsArray) ->
     #draw icons into the canvas
