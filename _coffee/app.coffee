@@ -118,7 +118,7 @@ class App
       #load json
       $(buttons.load).on "click", =>
         #load json file
-        $(buttons.loadInput).trigger("click")
+        $(buttons.loadInput).val("").trigger("click")
 
       $(buttons.loadInput).on "change", (e) ->
         file = $(@)[0].files[0]

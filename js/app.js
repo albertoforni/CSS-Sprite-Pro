@@ -121,7 +121,7 @@
           return saveAs(file, saveFileName + ".json");
         });
         $(buttons.load).on("click", function() {
-          return $(buttons.loadInput).trigger("click");
+          return $(buttons.loadInput).val("").trigger("click");
         });
         $(buttons.loadInput).on("change", function(e) {
           var file, reader;
