@@ -82,7 +82,7 @@ class Code
       return false
 
     if clear is true
-      @clear(true)
+      @clear()
 
     html = ""
 
@@ -152,15 +152,11 @@ class Code
 
     message.setMessage("code", "File's names converted to psudo-classes", "production")
 
-  clear: (sure) ->
-    if sure is true
-      #reset all code
-      codeStack = []
-      $code[0].innerHTML = ""
-      firstRowShown = false
-    else
-      message.setMessage("code", "You tried to clear the the code area, but you're not sure, right!?", "debug")
-      return false
+  clear: () ->
+    #reset all code
+    codeStack = []
+    $code[0].innerHTML = ""
+    firstRowShown = false
 
   highlightElement: (icon) ->
     $code.find(".class").each () ->

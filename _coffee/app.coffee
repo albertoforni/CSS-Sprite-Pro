@@ -206,8 +206,8 @@ class App
   clear = ->
     #clear canvas and code
     icons = []
-    canvas.clear(true)
-    code.clear(true)
+    canvas.clear()
+    code.clear()
     message.setMessage("app", "Now your project is empty", "production")
 
   deleteIcon = (icon) ->

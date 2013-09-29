@@ -27,11 +27,8 @@ class Space
   #
   # public instance methods
   #
-  clear: (sure, setWidth, setHeight) ->
+  clear: (setWidth, setHeight) ->
     # clear the space
-    unless sure is true
-      message.setMessage("space", "You tried to clear the the space, but you're not sure, right!?", "debug")
-      return false
 
     #reset biggest width and height
     biggestWidth = 0
