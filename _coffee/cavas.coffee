@@ -7,9 +7,6 @@ class Canvas
   $area = {}
   $background = {} #jQuery element which holds the background of the canvas
 
-  $downloadLink = {} #element which contains the image/png;base64; url
-  fileName = ""
-
   resizeCallback = null
   stopCallback = null
   context = {} #canvas context must be 2d
@@ -85,7 +82,6 @@ class Canvas
       y: e.clientY - rect.top
     }
 
-
   place: (width, height) ->
     space.place(width,height)
 
@@ -103,20 +99,10 @@ class Canvas
       #use the canvas method
       @getContext().drawImage(icon, icon.left, icon.top)
 
-    img = @getArea()[0].toDataURL("image/png;base64;")
-    $downloadLink.attr
-      href: img
-      download: fileName
-    .removeClass("hidden")
-
-  render: (Icon, numElements, $downloadLinkParam, fileNameParam) ->
+  render: (Icon, numElements) ->
     #prepare to draw into the canvas
     unless Icon
       return false
-
-    if $downloadLinkParam then $downloadLink = $downloadLinkParam
-    if fileNameParam then fileName = fileNameParam
-
 
     addingArray.push(Icon)
     if numElementsCounter < numElements

@@ -16,7 +16,6 @@
     <link rel="stylesheet" href="css/guiders.css" type="text/css" />
     <link rel="stylesheet" href="css/main.css">
 
-    <script src="js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
 </head>
 <body>
 <!--[if lt IE 7]>
@@ -43,7 +42,7 @@
             <div id="messages"><span class="title">{ Message }</span></div>
         </div>
         <section id="actions" class="col4">
-            <a href="" id="downloadLink" download="" class="downloadLink">Download</a>
+            <span id="downloadLink" class="downloadLink">Download</span>
         </section>
     </div>
     <section id="mainSection" class="row mainSection">
@@ -52,9 +51,9 @@
                 <span id="fit">Fit</span>
                 <span id="convert">Convert</span>
                 <span id="clear">Clear</span>
-            </div>
-            <div class="col4 actionsButtons">
-                <span id="copyAll" data-clipboard-target="clipboard_text" title="Click to copy to clipboard.">Copy All</span>
+                <span id="save">Save</span>
+                <span id="load">Load</span>
+                <input id="loadInput" class="hidden" type="file" value="Load" accept="application/json">
             </div>
         </div>
         <div class="row">
@@ -75,7 +74,7 @@
                     <li data-value="less">less</li>
                 </ul>
                 <span class="placeholder">{ }</span>
-                <pre id="clipboard_text" class="hidden"><code></code></pre>
+                <pre id="code" class="hidden"><code></code></pre>
             </aside>
         </div>
     </section>
@@ -96,10 +95,12 @@
 <script src="js/vendor/rainbow.min.js"></script>
 <script src="js/vendor/language/generic.js"></script>
 <script src="js/vendor/language/css.js"></script>
-<script src="js/vendor/ZeroClipboard.min.js"></script>
 <script src="js/vendor/underscore.min.js"></script>
 <script src="js/vendor/guiders.js"></script>
 <script src="js/guiders.js"></script>
+<script src="js/vendor/Blob.js"></script>
+<script src="js/vendor/canvas-toBlob.js"></script>
+<script src="js/vendor/FileSaver.js"></script>
 
 <script src="js/icon.js"></script>
 <script src="js/app.js"></script>
@@ -135,13 +136,19 @@
             },
             download: {
                 anchor: "#downloadLink",
-                fileName: "cssspritepro.png",
-                copyAll: "#copyAll"
+                fileName: "cssSpritePro"
+            },
+            save: {
+                anchor: "#saveLink",
+                fileName: "cssSpritePro"
             },
             buttons: {
                 fit:    "#fit",
                 convert: "#convert",
-                clear: "#clear"
+                clear: "#clear",
+                save: "#save",
+                load: "#load",
+                loadInput: "#loadInput"
             },
             canvasIconTooltip: {
                 $tooltip: $("#canvasIconsActions"),

@@ -3,13 +3,17 @@
   var App, Canvas, Code, Message, Space;
 
   App = (function() {
-    var $downloadAnchor, buttons, canvas, canvasIconTooltip, clear, code, convert, deleteIcon, downloadFileName, fileDrag, fit, iconOnloadCallback, icons, parseFile, reRenderCallback;
+    var $downloadAnchor, $saveAnchor, buttons, canvas, canvasIconTooltip, clear, code, convert, deleteIcon, downloadFileName, fileDrag, fit, iconOnloadCallback, icons, parseFile, reRenderCallback, saveFileName;
 
     window.App = App;
 
     $downloadAnchor = {};
 
-    downloadFileName = {};
+    downloadFileName = "";
+
+    $saveAnchor = {};
+
+    saveFileName = "";
 
     buttons = {};
 
@@ -26,12 +30,13 @@
     canvasIconTooltip = {};
 
     function App(params) {
-      var copyAllLink;
       if (!(params && App.checkBrowserCompatibility())) {
         return false;
       }
       $downloadAnchor = $(params.download.anchor);
       downloadFileName = params.download.fileName;
+      $saveAnchor = $(params.save.anchor);
+      saveFileName = params.save.fileName;
       buttons = params.buttons;
       reRenderCallback = params.reRenderCallback;
       iconOnloadCallback = params.iconOnloadCallback;
@@ -45,6 +50,7 @@
         click: function(e) {
           var icon, mousePosition, selectedIcon, _i, _len, _ref, _ref1;
           e.stopPropagation();
+          canvasIconTooltip.$tooltip.off(".deleteIcon");
           mousePosition = canvas.getMousePos(e);
           for (_i = 0, _len = icons.length; _i < _len; _i++) {
             icon = icons[_i];
@@ -64,10 +70,10 @@
             canvasIconTooltip.$tooltip.on("click.deleteIcon", canvasIconTooltip.buttons.deleteIcon, function() {
               return deleteIcon(selectedIcon);
             });
-            return $("body").on("click", function() {
-              canvasIconTooltip.$tooltip.off("click");
+            return $("body").on("click.iconSelection", function() {
+              canvasIconTooltip.$tooltip.off(".deleteIcon");
               canvasIconTooltip.$tooltip.addClass("hidden");
-              return $(this).off("click");
+              return $(this).off(".iconSelection");
             });
           }
         }
@@ -92,16 +98,73 @@
         $(buttons.convert).on("click", function() {
           return convert();
         });
-        return $(buttons.clear).on("click", function() {
+        $(buttons.clear).on("click", function() {
           return clear();
         });
-      });
-      copyAllLink = new ZeroClipboard($(params.download.copyAll), {
-        moviePath: './resources/ZeroClipboard.swf',
-        hoverClass: "hover"
-      });
-      copyAllLink.on('complete', function() {
-        return message.setMessage("App", "Copied text to clipboard", "production");
+        $(buttons.save).on("click", function() {
+          var file, icon, jsonToBeSaved, _i, _len;
+          jsonToBeSaved = [];
+          for (_i = 0, _len = icons.length; _i < _len; _i++) {
+            icon = icons[_i];
+            jsonToBeSaved.push({
+              name: icon.name,
+              src: icon.src,
+              left: icon.left,
+              top: icon.top,
+              width: icon.width,
+              height: icon.height
+            });
+          }
+          file = new Blob([JSON.stringify(jsonToBeSaved)], {
+            type: "application/json;charset=utf-8;"
+          });
+          return saveAs(file, saveFileName + ".json");
+        });
+        $(buttons.load).on("click", function() {
+          return $(buttons.loadInput).trigger("click");
+        });
+        $(buttons.loadInput).on("change", function(e) {
+          var file, reader;
+          file = $(this)[0].files[0];
+          reader = new FileReader();
+          reader.onload = function(e) {
+            var error, icon, jsonFile, loadedIcon, loadedIcons, _i, _len, _results;
+            jsonFile = e.srcElement.result;
+            try {
+              loadedIcons = JSON.parse(jsonFile);
+            } catch (_error) {
+              error = _error;
+              message.setMessage("App", "Your JSON file has some issues. " + error, "production");
+            }
+            clear();
+            _results = [];
+            for (_i = 0, _len = loadedIcons.length; _i < _len; _i++) {
+              loadedIcon = loadedIcons[_i];
+              icon = new Image();
+              icon.setSrc(loadedIcon.src);
+              icon.setName(loadedIcon.name);
+              icon.setPosition(canvas.place(icon.width, icon.height));
+              icons.push(icon);
+              code.render(icon, loadedIcons.length, false);
+              canvas.render(icon, loadedIcons.length);
+              _results.push(typeof iconOnloadCallback === "function" ? iconOnloadCallback() : void 0);
+            }
+            return _results;
+          };
+          return reader.readAsText(file);
+        });
+        return $downloadAnchor.on("click", function() {
+          var canvasHtmlElement, codeFile, codeText;
+          canvasHtmlElement = canvas.getArea()[0];
+          canvasHtmlElement.toBlob(function(blob) {
+            return saveAs(blob, "" + downloadFileName + ".png");
+          });
+          codeText = code.getCode().text();
+          codeFile = new Blob([codeText], {
+            type: "text/css;charset=utf-8;"
+          });
+          return saveAs(codeFile, downloadFileName + "." + code.getFormat());
+        });
       });
     }
 
@@ -132,7 +195,7 @@
                 icon.setPosition(canvas.place(icon.width, icon.height));
                 icons.push(icon);
                 code.render(icon, files.length, false);
-                canvas.render(icon, files.length, $downloadAnchor, downloadFileName);
+                canvas.render(icon, files.length);
                 return typeof iconOnloadCallback === "function" ? iconOnloadCallback() : void 0;
               };
             };
@@ -182,15 +245,11 @@
   })();
 
   Canvas = (function() {
-    var $area, $background, $downloadLink, addingArray, context, fileName, height, numElementsCounter, resizeCallback, space, stopCallback, width;
+    var $area, $background, addingArray, context, height, numElementsCounter, resizeCallback, space, stopCallback, width;
 
     $area = {};
 
     $background = {};
-
-    $downloadLink = {};
-
-    fileName = "";
 
     resizeCallback = null;
 
@@ -292,27 +351,18 @@
     };
 
     Canvas.prototype.drawImage = function(IconsArray) {
-      var icon, img, _i, _len;
+      var icon, _i, _len, _results;
+      _results = [];
       for (_i = 0, _len = IconsArray.length; _i < _len; _i++) {
         icon = IconsArray[_i];
-        this.getContext().drawImage(icon, icon.left, icon.top);
+        _results.push(this.getContext().drawImage(icon, icon.left, icon.top));
       }
-      img = this.getArea()[0].toDataURL("image/png;base64;");
-      return $downloadLink.attr({
-        href: img,
-        download: fileName
-      }).removeClass("hidden");
+      return _results;
     };
 
-    Canvas.prototype.render = function(Icon, numElements, $downloadLinkParam, fileNameParam) {
+    Canvas.prototype.render = function(Icon, numElements) {
       if (!Icon) {
         return false;
-      }
-      if ($downloadLinkParam) {
-        $downloadLink = $downloadLinkParam;
-      }
-      if (fileNameParam) {
-        fileName = fileNameParam;
       }
       addingArray.push(Icon);
       if (numElementsCounter < numElements) {
@@ -389,7 +439,7 @@
 
     template = {
       css: {
-        start: "i {\n  background-image: url('cssspritepro.png');\n  display: inline-block;\n}\n",
+        start: "i {\n  background-image: url('cssSpritePro.png');\n  display: inline-block;\n}\n",
         block: "i.{{name}}  {\n  background-position: {{#if left}}-{{/if}}{{left}}px {{#if top}}-{{/if}}{{top}}px;\n  height: {{height}}px;\n  width: {{width}}px;\n}\n",
         end: " \n"
       },
@@ -491,7 +541,15 @@
     };
 
     Code.prototype.getArea = function() {
-      return this.$area;
+      return $area;
+    };
+
+    Code.prototype.getCode = function() {
+      return $code;
+    };
+
+    Code.prototype.getFormat = function() {
+      return format;
     };
 
     Code.prototype.convert = function() {

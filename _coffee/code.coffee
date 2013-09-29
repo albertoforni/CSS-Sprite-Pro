@@ -14,7 +14,7 @@ class Code
   formatArray = ["css", "less", "scss", "sass"]
   template =
     css:
-      start: "i {\n  background-image: url('cssspritepro.png');\n  display: inline-block;\n}\n"
+      start: "i {\n  background-image: url('cssSpritePro.png');\n  display: inline-block;\n}\n"
       block: "i.{{name}}  {\n  background-position: {{#if left}}-{{/if}}{{left}}px {{#if top}}-{{/if}}{{top}}px;\n  height: {{height}}px;\n  width: {{width}}px;\n}\n"
       end: " \n"
     scss:
@@ -126,7 +126,13 @@ class Code
       $code.append(highlighted_code)
 
   getArea: ->
-    @$area
+    $area
+
+  getCode: ->
+    $code
+
+  getFormat: ->
+    format
 
   convert: ->
     #transform the code to psudo-class selector

@@ -5,8 +5,12 @@ class App
   # private instance properties
   #
 
-  $downloadAnchor = {}
-  downloadFileName = {}
+  $downloadAnchor = {} #download css and png
+  downloadFileName = ""
+
+  $saveAnchor = {} #save json file with all icons
+  saveFileName = ""
+
   buttons = {} #actions like fit canvas to the images
   reRenderCallback = null
   iconOnloadCallback = null
@@ -26,6 +30,8 @@ class App
 
     $downloadAnchor = $(params.download.anchor)
     downloadFileName = params.download.fileName
+    $saveAnchor = $(params.save.anchor)
+    saveFileName = params.save.fileName
     buttons = params.buttons
     reRenderCallback = params.reRenderCallback
     iconOnloadCallback = params.iconOnloadCallback
@@ -42,6 +48,7 @@ class App
       drop: parseFile
       click: (e) ->
         e.stopPropagation()
+        canvasIconTooltip.$tooltip.off(".deleteIcon")
 
         mousePosition = canvas.getMousePos(e)
 
@@ -61,10 +68,10 @@ class App
           canvasIconTooltip.$tooltip.on "click.deleteIcon", canvasIconTooltip.buttons.deleteIcon, ->
             deleteIcon(selectedIcon)
 
-          $("body").on "click", ->
-            canvasIconTooltip.$tooltip.off("click")
+          $("body").on "click.iconSelection", ->
+            canvasIconTooltip.$tooltip.off(".deleteIcon")
             canvasIconTooltip.$tooltip.addClass("hidden")
-            $(@).off("click")
+            $(@).off(".iconSelection")
 
     #re-render icons
     $(document).on "rerender", (e, ui) ->
@@ -93,14 +100,62 @@ class App
         #clear canvas and code
         clear()
 
-    #initialize copy to clipboard of code
-    copyAllLink = new ZeroClipboard $(params.download.copyAll), {
-      moviePath: './resources/ZeroClipboard.swf'
-      hoverClass: "hover"
-    }
+      $(buttons.save).on "click", =>
+        #save the icons in a json file
+        jsonToBeSaved = []
+        for icon in icons
+          jsonToBeSaved.push
+            name: icon.name
+            src: icon.src
+            left: icon.left
+            top: icon.top
+            width: icon.width
+            height: icon.height
 
-    copyAllLink.on 'complete', ->
-      message.setMessage("App", "Copied text to clipboard", "production")
+        file = new Blob([JSON.stringify(jsonToBeSaved)], {type: "application/json;charset=utf-8;"});
+        saveAs(file, saveFileName + ".json");
+
+      #load json
+      $(buttons.load).on "click", =>
+        #load json file
+        $(buttons.loadInput).trigger("click")
+
+      $(buttons.loadInput).on "change", (e) ->
+        file = $(@)[0].files[0]
+
+        reader = new FileReader()
+        reader.onload = (e) ->
+          jsonFile = e.srcElement.result
+          try
+            loadedIcons = JSON.parse(jsonFile)
+          catch error
+            message.setMessage("App", "Your JSON file has some issues. #{error}", "production")
+
+          #create the canvas
+          clear()
+
+          for loadedIcon in loadedIcons
+            icon = new Image()
+            icon.setSrc(loadedIcon.src)
+            icon.setName(loadedIcon.name)
+
+            icon.setPosition(canvas.place(icon.width, icon.height))
+            icons.push(icon)
+            code.render(icon, loadedIcons.length, false)
+            canvas.render(icon, loadedIcons.length)
+            iconOnloadCallback?()
+
+        reader.readAsText(file)
+
+      $downloadAnchor.on "click", ->
+        #download canvas and code
+        canvasHtmlElement = canvas.getArea()[0]
+        canvasHtmlElement.toBlob (blob) ->
+          saveAs(blob, "#{downloadFileName}.png")
+
+        codeText = code.getCode().text()
+        codeFile = new Blob([codeText], {type: "text/css;charset=utf-8;"})
+        saveAs(codeFile, downloadFileName + "." + code.getFormat())
 
   #
   # private instance methods
@@ -135,7 +190,7 @@ class App
               icon.setPosition(canvas.place(icon.width, icon.height))
               icons.push(icon)
               code.render(icon, files.length, false)
-              canvas.render(icon, files.length, $downloadAnchor, downloadFileName)
+              canvas.render(icon, files.length)
               iconOnloadCallback?()
         reader.readAsDataURL(file)
 

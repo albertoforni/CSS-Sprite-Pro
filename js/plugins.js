@@ -270,9 +270,6 @@ var Canvas2Image = (function() {
  * b64 = base64encode(data);
  * data = base64decode(b64);
  */
-
-(function() {
-
 var base64EncodeChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 var base64DecodeChars = new Array(
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
@@ -371,8 +368,6 @@ function base64decode(str) {
 if (!window.btoa) window.btoa = base64encode;
 if (!window.atob) window.atob = base64decode;
 
-})();
-
 (function($){
     $.fn.scrollView = function (params) {
         var options = {
@@ -391,5 +386,7 @@ if (!window.atob) window.atob = base64decode;
         });
     }
 })(jQuery)
+
+
 
 

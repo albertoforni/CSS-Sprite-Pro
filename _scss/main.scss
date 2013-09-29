@@ -198,12 +198,14 @@ ul {
   }
 }
 
-a.downloadLink {
+.downloadLink {
   color: $neutralColor1;
   display: block;
   background-color: $mainColor;
   font-size: 2em;
   padding: 0.6em;
+  text-align: center;
+  cursor: pointer;
   @include box-shadow(7px 7px 0 0 $neutralColor0);
   @include single-transition(all, 400ms, ease-in-out);
   &:hover {
