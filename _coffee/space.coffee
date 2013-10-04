@@ -96,7 +96,7 @@ class Space
 
         break
 
-    if typeof position is undefined
+    unless position
       #unable to find a free hole
       message.setMessage("Space", "Your image is too big for the actual canvas size. If you want to place that image you need to resize the cavans", "production")
       return false
@@ -122,6 +122,8 @@ class Space
     for emptySpace, i in emptySpaces
       emptySpaces[i].width = spaceWidth - emptySpace.left if emptySpace.left + emptySpace.width > spaceWidth
       emptySpaces[i].height = spaceHeight - emptySpace.top if emptySpace.top + emptySpace.height > spaceHeight
+
+    return @
 
   getArea: ->
     width: spaceWidth

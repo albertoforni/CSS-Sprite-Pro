@@ -46,8 +46,7 @@ class Message
         $area.find("p").first().before($message)
       else
         $area.append($message)
-
-    $message.hide().fadeIn()
+      $message.hide().fadeIn()
 
   getMessage: (mode) ->
     if not mode or mode is debug

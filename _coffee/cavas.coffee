@@ -44,7 +44,7 @@ class Canvas
         #re-render icons
         @setWidth(ui.size.width)
         @setHeight(ui.size.height)
-        @clear(true)
+        @clear()
         $(document).trigger("rerender", ui)
 
         stopCallback(e,ui)
@@ -86,6 +86,7 @@ class Canvas
     space.place(width,height)
 
   clear: () ->
+    addingArray = []
     space.clear(width,height)
     context.clearRect(0, 0, width, height)
 
@@ -115,7 +116,6 @@ class Canvas
     unless Icons
       return false
 
-    @clear(true)
     @drawImage(Icons)
 
     return @
