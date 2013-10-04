@@ -4,8 +4,6 @@
   Image extends Image Object 
   ---------------- */
 
-var iconNameRegEx = new RegExp("(\w+)([^.]\w+)?$");
-
 Image.prototype.delete = function () {};
 
 Image.prototype.getPosition = function () {};
@@ -20,8 +18,11 @@ Image.prototype.setPosition = function (params) {
 
 Image.prototype.setName = function (name) {
   if (name) {
-    name = _.escape(name)
-    this.name = name.replace(iconNameRegEx, "");
+    name = _.escape(name);
+      if (name.indexOf(".") !== -1)
+        this.name = name.substr(0, name.lastIndexOf('.'));
+      else
+        this.name = name;
     return this;
   } 
 };
