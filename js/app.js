@@ -218,8 +218,8 @@
 
     clear = function() {
       icons = [];
-      canvas.clear(true);
-      code.clear(true);
+      canvas.clear();
+      code.clear();
       return message.setMessage("app", "Now your project is empty", "production");
     };
 
@@ -290,7 +290,7 @@
         stop: function(e, ui) {
           _this.setWidth(ui.size.width);
           _this.setHeight(ui.size.height);
-          _this.clear(true);
+          _this.clear();
           $(document).trigger("rerender", ui);
           return stopCallback(e, ui);
         }
@@ -340,14 +340,10 @@
       return space.place(width, height);
     };
 
-    Canvas.prototype.clear = function(sure) {
-      if (sure === true) {
-        space.clear(sure, width, height);
-        return context.clearRect(0, 0, width, height);
-      } else {
-        message.setMessage("canvas", "You tried to clear the the canvas area, but you're not sure, right!?", "debug");
-        return false;
-      }
+    Canvas.prototype.clear = function() {
+      addingArray = [];
+      space.clear(width, height);
+      return context.clearRect(0, 0, width, height);
     };
 
     Canvas.prototype.drawImage = function(IconsArray) {
@@ -377,7 +373,6 @@
       if (!Icons) {
         return false;
       }
-      this.clear(true);
       this.drawImage(Icons);
       return this;
     };
@@ -421,7 +416,7 @@
   })();
 
   Code = (function() {
-    var $area, $code, $formatSelector, addingArray, buildHtml, codeStack, data, filter, firstRowShown, format, formatArray, numElementsCounter, psudoClasses, template, _this;
+    var $area, $code, $formatSelector, addingArray, buildHtml, codeStack, data, fileName, filter, firstRowShown, format, formatArray, numElementsCounter, psudoClasses, template, _this;
 
     _this = {};
 
@@ -437,9 +432,11 @@
 
     formatArray = ["css", "less", "scss", "sass"];
 
+    fileName = "";
+
     template = {
       css: {
-        start: "i {\n  background-image: url('cssSpritePro.png');\n  display: inline-block;\n}\n",
+        start: "i {\n  background-image: url('{{fileName}}.png');\n  display: inline-block;\n}\n",
         block: "i.{{name}}  {\n  background-position: {{#if left}}-{{/if}}{{left}}px {{#if top}}-{{/if}}{{top}}px;\n  height: {{height}}px;\n  width: {{width}}px;\n}\n",
         end: " \n"
       },
@@ -479,6 +476,7 @@
       _this = this;
       $area = $(params.area);
       $code = $(params.code);
+      fileName = params.fileName;
       filter = params.filter;
       data = params.data;
       $formatSelector = $(params.format);
@@ -506,7 +504,7 @@
         return false;
       }
       if (clear === true) {
-        this.clear(true);
+        this.clear();
       }
       html = "";
       if (refactor === false) {
@@ -571,15 +569,10 @@
       return message.setMessage("code", "File's names converted to psudo-classes", "production");
     };
 
-    Code.prototype.clear = function(sure) {
-      if (sure === true) {
-        codeStack = [];
-        $code[0].innerHTML = "";
-        return firstRowShown = false;
-      } else {
-        message.setMessage("code", "You tried to clear the the code area, but you're not sure, right!?", "debug");
-        return false;
-      }
+    Code.prototype.clear = function() {
+      codeStack = [];
+      $code[0].innerHTML = "";
+      return firstRowShown = false;
     };
 
     Code.prototype.highlightElement = function(icon) {
@@ -612,7 +605,9 @@
       templ = Handlebars.compile(template[format].block);
       html = "";
       if (firstRowShown === false) {
-        html += template[format].start;
+        html += Handlebars.compile(template[format].start)({
+          fileName: fileName
+        });
         firstRowShown = true;
       }
       for (_i = 0, _len = elements.length; _i < _len; _i++) {
@@ -681,8 +676,8 @@
         } else {
           $area.append($message);
         }
+        return $message.hide().fadeIn();
       }
-      return $message.hide().fadeIn();
     };
 
     Message.prototype.getMessage = function(mode) {
@@ -735,11 +730,7 @@
       });
     }
 
-    Space.prototype.clear = function(sure, setWidth, setHeight) {
-      if (sure !== true) {
-        message.setMessage("space", "You tried to clear the the space, but you're not sure, right!?", "debug");
-        return false;
-      }
+    Space.prototype.clear = function(setWidth, setHeight) {
       biggestWidth = 0;
       biggestHeight = 0;
       if (setWidth && setHeight) {
@@ -800,7 +791,7 @@
           break;
         }
       }
-      if (typeof position === void 0) {
+      if (!position) {
         message.setMessage("Space", "Your image is too big for the actual canvas size. If you want to place that image you need to resize the cavans", "production");
         return false;
       }
@@ -814,24 +805,21 @@
     };
 
     Space.prototype.fit = function() {
-      var emptySpace, i, _i, _len, _results;
+      var emptySpace, i, _i, _len;
       spaceWidth = biggestWidth;
       message.setMessage("Space", "New space width: " + spaceWidth, "debug");
       spaceHeight = biggestHeight;
       message.setMessage("Space", "New space height: " + spaceHeight, "debug");
-      _results = [];
       for (i = _i = 0, _len = emptySpaces.length; _i < _len; i = ++_i) {
         emptySpace = emptySpaces[i];
         if (emptySpace.left + emptySpace.width > spaceWidth) {
           emptySpaces[i].width = spaceWidth - emptySpace.left;
         }
         if (emptySpace.top + emptySpace.height > spaceHeight) {
-          _results.push(emptySpaces[i].height = spaceHeight - emptySpace.top);
-        } else {
-          _results.push(void 0);
+          emptySpaces[i].height = spaceHeight - emptySpace.top;
         }
       }
-      return _results;
+      return this;
     };
 
     Space.prototype.getArea = function() {

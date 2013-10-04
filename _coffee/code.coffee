@@ -12,9 +12,10 @@ class Code
 
   $formatSelector = {}
   formatArray = ["css", "less", "scss", "sass"]
+  fileName = ""
   template =
     css:
-      start: "i {\n  background-image: url('cssSpritePro.png');\n  display: inline-block;\n}\n"
+      start: "i {\n  background-image: url('{{fileName}}.png');\n  display: inline-block;\n}\n"
       block: "i.{{name}}  {\n  background-position: {{#if left}}-{{/if}}{{left}}px {{#if top}}-{{/if}}{{top}}px;\n  height: {{height}}px;\n  width: {{width}}px;\n}\n"
       end: " \n"
     scss:
@@ -51,6 +52,7 @@ class Code
 
     $area = $(params.area)
     $code = $(params.code)
+    fileName = params.fileName
     filter = params.filter
     data = params.data
     $formatSelector = $(params.format)
@@ -186,7 +188,7 @@ class Code
     html = ""
 
     if firstRowShown is false
-      html += template[format].start
+      html += Handlebars.compile(template[format].start)({fileName: fileName})
       firstRowShown = true
 
     html += templ(element) for element in elements
