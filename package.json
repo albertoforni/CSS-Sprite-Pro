@@ -1,0 +1,25 @@
+{
+  "name": "cssprites",
+  "version": "1.0.0",
+  "description": "an application that allows users to create CSS Sprites quickly and easily",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/albertodotcom/CSS-Sprite-Pro.git"
+  },
+  "author": "Alberto Forni",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/albertodotcom/CSS-Sprite-Pro/issues"
+  },
+  "homepage": "https://github.com/albertodotcom/CSS-Sprite-Pro",
+  "devDependencies": {
+    "grunt": "~0.4.2",
+    "grunt-contrib-coffee": "~0.10.0",
+    "grunt-contrib-watch": "~0.5.3",
+    "grunt-contrib-compass": "~0.7.2"
+  }
+}
