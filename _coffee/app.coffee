@@ -5,21 +5,21 @@ class App
   # private instance properties
   #
 
-  $downloadAnchor = {} #download css and png
-  downloadFileName = ""
+  @_$downloadAnchor = {} #download css and png
+  @_downloadFileName = ""
 
-  $saveAnchor = {} #save json file with all icons
-  saveFileName = ""
+  @_$saveAnchor = {} #save json file with all icons
+  @_saveFileName = ""
 
-  buttons = {} #actions like fit canvas to the images
-  reRenderCallback = null
-  iconOnloadCallback = null
+  @_buttons = {} #actions like fit canvas to the images
+  @_reRenderCallback = null
+  @_iconOnloadCallback = null
 
-  canvas = {} #object that handles icons' display
-  code = {} #object that handles icons' code
-  icons = [] #array that stores all the icons
+  @_canvas = {} #object that handles icons' display
+  @_code = {} #object that handles icons' code
+  @_icons = [] #array that stores all the icons
 
-  canvasIconTooltip = {} #inside canvas element, holds icon action to be shown on mouse hover. hidden by default
+  @_canvasIconTooltip = {} #inside canvas element, holds icon action to be shown on mouse hover. hidden by default
 
   #
   # constructor
@@ -28,82 +28,82 @@ class App
     unless params and App.checkBrowserCompatibility()
       return false
 
-    $downloadAnchor = $(params.download.anchor)
-    downloadFileName = params.download.fileName
-    $saveAnchor = $(params.save.anchor)
-    saveFileName = params.save.fileName
-    buttons = params.buttons
-    reRenderCallback = params.reRenderCallback
-    iconOnloadCallback = params.iconOnloadCallback
+    @_$downloadAnchor = $(params.download.anchor)
+    @_downloadFileName = params.download.fileName
+    @_$saveAnchor = $(params.save.anchor)
+    @_saveFileName = params.save.fileName
+    @_buttons = params.buttons
+    @_reRenderCallback = params.reRenderCallback
+    @_iconOnloadCallback = params.iconOnloadCallback
 
-    canvas = new Canvas(params.canvas)
-    code = new Code(params.code)
+    @_canvas = new Canvas(params.canvas)
+    @_code = new Code(params.code)
 
-    canvasIconTooltip = params.canvasIconTooltip
+    @_canvasIconTooltip = params.canvasIconTooltip
 
     #drop icons events
-    canvas.getArea().on
+    @_canvas.getArea().on
       dragover: fileDrag
       dragleave: fileDrag
       drop: parseFile
       click: (e) ->
         e.stopPropagation()
-        canvasIconTooltip.$tooltip.off(".deleteIcon")
+        @_canvasIconTooltip.$tooltip.off(".deleteIcon")
 
-        mousePosition = canvas.getMousePos(e)
+        mousePosition = @_canvas.getMousePos(e)
 
-        for icon in icons
+        for icon in @_icons
           if icon.left <= mousePosition.x <= icon.left + icon.width and icon.top <= mousePosition.y <= icon.top + icon.height
             selectedIcon = icon
             break
 
         if selectedIcon
-          code.highlightElement(selectedIcon)
-          canvasIconTooltip.$tooltip.removeClass("hidden").css
-            left: canvasIconTooltip.addToLeft + selectedIcon.left + selectedIcon.width / 2
-            top:  canvasIconTooltip.addToTop + selectedIcon.top + selectedIcon.height
+          @_code.highlightElement(selectedIcon)
+          @_canvasIconTooltip.$tooltip.removeClass("hidden").css
+            left: @_canvasIconTooltip.addToLeft + selectedIcon.left + selectedIcon.width / 2
+            top:  @_canvasIconTooltip.addToTop + selectedIcon.top + selectedIcon.height
             width: 150
             marginLeft: -75
 
-          canvasIconTooltip.$tooltip.on "click.deleteIcon", canvasIconTooltip.buttons.deleteIcon, ->
+          @_canvasIconTooltip.$tooltip.on "click.deleteIcon", @_canvasIconTooltip.buttons.deleteIcon, ->
             deleteIcon(selectedIcon)
 
           $("body").on "click.iconSelection", ->
-            canvasIconTooltip.$tooltip.off(".deleteIcon")
-            canvasIconTooltip.$tooltip.addClass("hidden")
+            @_canvasIconTooltip.$tooltip.off(".deleteIcon")
+            @_canvasIconTooltip.$tooltip.addClass("hidden")
             $(@).off(".iconSelection")
 
     #re-render icons
     $(document).on "rerender", (e, ui) ->
-      for icon in icons
-        newPosition = canvas.place(icon.width, icon.height)
+      for icon in @_icons
+        newPosition = @_canvas.place(icon.width, icon.height)
         icon.left = newPosition.left
         icon.top = newPosition.top
-        code.render(icon, icons.length, false, true)
+        @_code.render(icon, @_icons.length, false, true)
 
-      canvas.reRender(icons)
+      @_canvas.reRender(@_icons)
 
-      reRenderCallback?(e, ui)
+      @_reRenderCallback(e, ui)
 
     #initialize buttons behaviors
     $(document).ready ->
-      $(buttons.fit).on "click", =>
+      $(@_buttons.fit).on "click", =>
         #fit canvas to the space occupied by the icons
         fit()
 
-      $(buttons.convert).on "click", =>
+      $(@_buttons.convert).on "click", =>
         #if the images name are properly formatted covert the to
         #pseudo-classes
         convert()
 
-      $(buttons.clear).on "click", =>
+      $(@_buttons.clear).on "click", =>
         #clear canvas and code
         clear()
 
-      $(buttons.save).on "click", =>
+      $(@_buttons.save).on "click", =>
         #save the icons in a json file
         jsonToBeSaved = []
-        for icon in icons
+        for icon in @_icons
           jsonToBeSaved.push
             name: icon.name
             src: icon.src
@@ -113,14 +113,14 @@ class App
             height: icon.height
 
         file = new Blob([JSON.stringify(jsonToBeSaved)], {type: "application/json;charset=utf-8;"});
-        saveAs(file, saveFileName + ".json");
+        saveAs(file, @_saveFileName + ".json");
 
       #load json
-      $(buttons.load).on "click", =>
+      $(@_buttons.load).on "click", =>
         #load json file
-        $(buttons.loadInput).val("").trigger("click")
+        $(@_buttons.loadInput).val("").trigger("click")
 
-      $(buttons.loadInput).on "change", (e) ->
+      $(@_buttons.loadInput).on "change", (e) ->
         file = $(@)[0].files[0]
 
         reader = new FileReader()
@@ -139,23 +139,23 @@ class App
             icon.setSrc(loadedIcon.src)
             icon.setName(loadedIcon.name)
 
-            icon.setPosition(canvas.place(icon.width, icon.height))
-            icons.push(icon)
-            code.render(icon, loadedIcons.length, false)
-            canvas.render(icon, loadedIcons.length)
-            iconOnloadCallback?()
+            icon.setPosition(@_canvas.place(icon.width, icon.height))
+            @_icons.push(icon)
+            @_code.render(icon, loadedIcons.length, false)
+            @_canvas.render(icon, loadedIcons.length)
+            @_iconOnloadCallback()
 
         reader.readAsText(file)
 
-      $downloadAnchor.on "click", ->
+      @_$downloadAnchor.on "click", ->
         #download canvas and code
-        canvasHtmlElement = canvas.getArea()[0]
+        canvasHtmlElement = @_canvas.getArea()[0]
         canvasHtmlElement.toBlob (blob) ->
-          saveAs(blob, "#{downloadFileName}.png")
+          saveAs(blob, "#{@_downloadFileName}.png")
 
-        codeText = code.getCode().text()
+        codeText = @_code.getCode().text()
         codeFile = new Blob([codeText], {type: "text/css;charset=utf-8;"})
-        saveAs(codeFile, downloadFileName + "." + code.getFormat())
+        saveAs(codeFile, @_downloadFileName + "." + @_code.getFormat())
 
   #
   # private instance methods
@@ -187,35 +187,35 @@ class App
             icon.setName(file.name)
 
             icon.onload = ->
-              icon.setPosition(canvas.place(icon.width, icon.height))
-              icons.push(icon)
-              code.render(icon, files.length, false)
-              canvas.render(icon, files.length)
-              iconOnloadCallback?()
+              icon.setPosition(@_canvas.place(icon.width, icon.height))
+              @_icons.push(icon)
+              @_code.render(icon, files.length, false)
+              @_canvas.render(icon, files.length)
+              @_iconOnloadCallback()
         reader.readAsDataURL(file)
 
   fit = ->
     #fit canvas to current icons dimensions and positions
-    canvas.fit(icons)
+    @_canvas.fit(@_icons)
 
   convert = ->
     #if the images name are properly formatted covert the to
     #pseudo-classes
-    code.convert()
+    @_code.convert()
 
   clear = ->
     #clear canvas and code
-    icons = []
-    canvas.clear()
-    code.clear()
+    @_icons = []
+    @_canvas.clear()
+    @_code.clear()
     message.setMessage("app", "Now your project is empty", "production")
 
   deleteIcon = (icon) ->
-    icons = _.reject icons, (currentIcon) ->
+    @_icons = _.reject @_icons, (currentIcon) ->
       currentIcon.name == icon.name
 
-    canvas.deleteIcon(icon)
-    code.deteleIcon(icon)
+    @_canvas.deleteIcon(icon)
+    @_code.deteleIcon(icon)
 
     message.setMessage("app", "Icon #{icon.name} deleted", "production")
 
