@@ -22,7 +22,7 @@ module.exports = (grunt) ->
     compass:
       dist:
         options:
-          config: 'config/config.rb'
+          config: 'config.rb'
           sassDir: '_scss',
           cssDir: 'css',
           environment: 'production'
