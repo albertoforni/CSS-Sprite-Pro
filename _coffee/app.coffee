@@ -5,21 +5,21 @@ class App
   # private instance properties
   #
 
-  @_$downloadAnchor = {} #download css and png
-  @_downloadFileName = ""
+  # @_$downloadAnchor = {} download css and png
+  # @_downloadFileName = ""
 
-  @_$saveAnchor = {} #save json file with all icons
-  @_saveFileName = ""
+  # @_$saveAnchor = {} #save json file with all icons
+  # @_saveFileName = ""
 
-  @_buttons = {} #actions like fit canvas to the images
-  @_reRenderCallback = null
-  @_iconOnloadCallback = null
+  # @_buttons = {} #actions like fit canvas to the images
+  # @_reRenderCallback = null
+  # @_iconOnloadCallback = null
 
-  @_canvas = {} #object that handles icons' display
-  @_code = {} #object that handles icons' code
-  @_icons = [] #array that stores all the icons
+  # @_canvas = {} #object that handles icons' display
+  # @_code = {} #object that handles icons' code
+  # @_icons = [] #array that stores all the icons
 
-  @_canvasIconTooltip = {} #inside canvas element, holds icon action to be shown on mouse hover. hidden by default
+  # @_canvasIconTooltip = {} #inside canvas element, holds icon action to be shown on mouse hover. hidden by default
 
   #
   # constructor
@@ -38,6 +38,7 @@ class App
 
     @_canvas = new Canvas(params.canvas)
     @_code = new Code(params.code)
+    @_icons = []
 
     @_canvasIconTooltip = params.canvasIconTooltip
 
