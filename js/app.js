@@ -2,7 +2,7 @@
   var App, Canvas, Code, Message, Space;
 
   App = (function() {
-    var clear, convert, deleteIcon, fileDrag, fit, parseFile;
+    var fileDrag;
 
     window.App = App;
 
@@ -21,73 +21,105 @@
       this._code = new Code(params.code);
       this._icons = [];
       this._canvasIconTooltip = params.canvasIconTooltip;
-      this._canvas.getArea().on({
+      this._canvas.$area.on({
         dragover: fileDrag,
         dragleave: fileDrag,
-        drop: parseFile,
-        click: function(e) {
-          var icon, mousePosition, selectedIcon, _i, _len, _ref, _ref1, _ref2;
-          e.stopPropagation();
-          this._canvasIconTooltip.$tooltip.off(".deleteIcon");
-          mousePosition = this._canvas.getMousePos(e);
-          _ref = this._icons;
+        drop: (function(_this) {
+          return function(e) {
+            var file, files, reader, _i, _len, _results;
+            e.stopPropagation();
+            e.preventDefault();
+            files = e.dataTransfer.files;
+            fileDrag(e);
+            _results = [];
+            for (_i = 0, _len = files.length; _i < _len; _i++) {
+              file = files[_i];
+              reader = new FileReader();
+              if (file.type.indexOf("image") === 0) {
+                reader.onload = (function(file) {
+                  return function(e) {
+                    var icon;
+                    icon = new Image();
+                    icon.setSrc(e.target.result);
+                    icon.setName(file.name);
+                    return icon.onload = function() {
+                      icon.setPosition(_this._canvas.place(icon.width, icon.height));
+                      _this._icons.push(icon);
+                      _this._code.render(icon, files.length, false);
+                      _this._canvas.render(icon, files.length);
+                      return _this._iconOnloadCallback();
+                    };
+                  };
+                })(file);
+                _results.push(reader.readAsDataURL(file));
+              } else {
+                _results.push(void 0);
+              }
+            }
+            return _results;
+          };
+        })(this),
+        click: (function(_this) {
+          return function(e) {
+            var icon, mousePosition, selectedIcon, _i, _len, _ref, _ref1, _ref2;
+            e.stopPropagation();
+            _this._canvasIconTooltip.$tooltip.off(".deleteIcon");
+            mousePosition = _this._canvas.getMousePos(e);
+            _ref = _this._icons;
+            for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+              icon = _ref[_i];
+              if ((icon.left <= (_ref1 = mousePosition.x) && _ref1 <= icon.left + icon.width) && (icon.top <= (_ref2 = mousePosition.y) && _ref2 <= icon.top + icon.height)) {
+                selectedIcon = icon;
+                break;
+              }
+            }
+            if (selectedIcon) {
+              _this._code.highlightElement(selectedIcon);
+              _this._canvasIconTooltip.$tooltip.removeClass("hidden").css({
+                left: _this._canvasIconTooltip.addToLeft + selectedIcon.left + selectedIcon.width / 2,
+                top: _this._canvasIconTooltip.addToTop + selectedIcon.top + selectedIcon.height,
+                width: 150,
+                marginLeft: -75
+              });
+              _this._canvasIconTooltip.$tooltip.on("click.deleteIcon", _this._canvasIconTooltip.buttons.deleteIcon, function() {
+                return _this._deleteIcon(selectedIcon);
+              });
+              return $("body").on("click.iconSelection", function() {
+                _this._canvasIconTooltip.$tooltip.off(".deleteIcon");
+                _this._canvasIconTooltip.$tooltip.addClass("hidden");
+                return $(_this).off(".iconSelection");
+              });
+            }
+          };
+        })(this)
+      });
+      $(document).on("rerender", (function(_this) {
+        return function(e, ui) {
+          var icon, newPosition, _i, _len, _ref;
+          _ref = _this._icons;
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             icon = _ref[_i];
-            if ((icon.left <= (_ref1 = mousePosition.x) && _ref1 <= icon.left + icon.width) && (icon.top <= (_ref2 = mousePosition.y) && _ref2 <= icon.top + icon.height)) {
-              selectedIcon = icon;
-              break;
-            }
+            newPosition = _this._canvas.place(icon.width, icon.height);
+            icon.left = newPosition.left;
+            icon.top = newPosition.top;
+            _this._code.render(icon, _this._icons.length, false, true);
           }
-          if (selectedIcon) {
-            this._code.highlightElement(selectedIcon);
-            this._canvasIconTooltip.$tooltip.removeClass("hidden").css({
-              left: this._canvasIconTooltip.addToLeft + selectedIcon.left + selectedIcon.width / 2,
-              top: this._canvasIconTooltip.addToTop + selectedIcon.top + selectedIcon.height,
-              width: 150,
-              marginLeft: -75
-            });
-            this._canvasIconTooltip.$tooltip.on("click.deleteIcon", this._canvasIconTooltip.buttons.deleteIcon, function() {
-              return deleteIcon(selectedIcon);
-            });
-            return $("body").on("click.iconSelection", function() {
-              this._canvasIconTooltip.$tooltip.off(".deleteIcon");
-              this._canvasIconTooltip.$tooltip.addClass("hidden");
-              return $(this).off(".iconSelection");
-            });
-          }
-        }
-      });
-      $(document).on("rerender", function(e, ui) {
-        var icon, newPosition, _i, _len, _ref;
-        _ref = this._icons;
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          icon = _ref[_i];
-          newPosition = this._canvas.place(icon.width, icon.height);
-          icon.left = newPosition.left;
-          icon.top = newPosition.top;
-          this._code.render(icon, this._icons.length, false, true);
-        }
-        this._canvas.reRender(this._icons);
-        return this._reRenderCallback(e, ui);
-      });
-      $(document).ready(function() {
-        $(this._buttons.fit).on("click", (function(_this) {
-          return function() {
-            return fit();
-          };
-        })(this));
-        $(this._buttons.convert).on("click", (function(_this) {
-          return function() {
-            return convert();
-          };
-        })(this));
-        $(this._buttons.clear).on("click", (function(_this) {
-          return function() {
-            return clear();
-          };
-        })(this));
-        $(this._buttons.save).on("click", (function(_this) {
-          return function() {
+          _this._canvas.reRender(_this._icons);
+          return _this._reRenderCallback(e, ui);
+        };
+      })(this));
+      $(document).ready((function(_this) {
+        return function() {
+          $(_this._buttons.fit).on("click", function() {
+            return _this._canvas.fit(_this._icons);
+          });
+          $(_this._buttons.convert).on("click", function() {
+            return _this._code.convert();
+          });
+          $(_this._buttons.clear).on("click", function() {
+            return _this._clear();
+          });
+          $(_this._buttons.save).on("click", function() {
             var file, icon, jsonToBeSaved, _i, _len, _ref;
             jsonToBeSaved = [];
             _ref = _this._icons;
@@ -106,120 +138,76 @@
               type: "application/json;charset=utf-8;"
             });
             return saveAs(file, _this._saveFileName + ".json");
-          };
-        })(this));
-        $(this._buttons.load).on("click", (function(_this) {
-          return function() {
+          });
+          $(_this._buttons.load).on("click", function() {
             return $(_this._buttons.loadInput).val("").trigger("click");
-          };
-        })(this));
-        $(this._buttons.loadInput).on("change", function(e) {
-          var file, reader;
-          file = $(this)[0].files[0];
-          reader = new FileReader();
-          reader.onload = function(e) {
-            var error, icon, jsonFile, loadedIcon, loadedIcons, _i, _len, _results;
-            jsonFile = e.srcElement.result;
-            try {
-              loadedIcons = JSON.parse(jsonFile);
-            } catch (_error) {
-              error = _error;
-              message.setMessage("App", "Your JSON file has some issues. " + error, "production");
-            }
-            clear();
-            _results = [];
-            for (_i = 0, _len = loadedIcons.length; _i < _len; _i++) {
-              loadedIcon = loadedIcons[_i];
-              icon = new Image();
-              icon.setSrc(loadedIcon.src);
-              icon.setName(loadedIcon.name);
-              icon.setPosition(this._canvas.place(icon.width, icon.height));
-              this._icons.push(icon);
-              this._code.render(icon, loadedIcons.length, false);
-              this._canvas.render(icon, loadedIcons.length);
-              _results.push(this._iconOnloadCallback());
-            }
-            return _results;
-          };
-          return reader.readAsText(file);
-        });
-        return this._$downloadAnchor.on("click", function() {
-          var canvasHtmlElement, codeFile, codeText;
-          canvasHtmlElement = this._canvas.getArea()[0];
-          canvasHtmlElement.toBlob(function(blob) {
-            return saveAs(blob, "" + this._downloadFileName + ".png");
           });
-          codeText = this._code.getCode().text();
-          codeFile = new Blob([codeText], {
-            type: "text/css;charset=utf-8;"
+          $(_this._buttons.loadInput).on("change", function(e) {
+            var file, reader;
+            file = $(_this)[0].files[0];
+            reader = new FileReader();
+            reader.onload = function(e) {
+              var error, icon, jsonFile, loadedIcon, loadedIcons, _i, _len, _results;
+              jsonFile = e.srcElement.result;
+              try {
+                loadedIcons = JSON.parse(jsonFile);
+              } catch (_error) {
+                error = _error;
+                message.setMessage("App", "Your JSON file has some issues. " + error, "production");
+              }
+              _this._clear();
+              _results = [];
+              for (_i = 0, _len = loadedIcons.length; _i < _len; _i++) {
+                loadedIcon = loadedIcons[_i];
+                icon = new Image();
+                icon.setSrc(loadedIcon.src);
+                icon.setName(loadedIcon.name);
+                icon.setPosition(_this._canvas.place(icon.width, icon.height));
+                _this._icons.push(icon);
+                _this._code.render(icon, loadedIcons.length, false);
+                _this._canvas.render(icon, loadedIcons.length);
+                _results.push(_this._iconOnloadCallback());
+              }
+              return _results;
+            };
+            return reader.readAsText(file);
           });
-          return saveAs(codeFile, this._downloadFileName + "." + this._code.getFormat());
-        });
-      });
+          return _this._$downloadAnchor.on("click", function() {
+            var canvasHtmlElement, codeFile, codeText;
+            canvasHtmlElement = _this._canvas.$area[0];
+            canvasHtmlElement.toBlob(function(blob) {
+              return saveAs(blob, "" + _this._downloadFileName + ".png");
+            });
+            codeText = _this._code.getCode().text();
+            codeFile = new Blob([codeText], {
+              type: "text/css;charset=utf-8;"
+            });
+            return saveAs(codeFile, _this._downloadFileName + "." + _this._code.getFormat());
+          });
+        };
+      })(this));
     }
 
-    fileDrag = function(e) {
-      e.stopPropagation();
-      e.preventDefault();
-      return e.target.className = e.type === "dragover" ? "hover" : "";
-    };
-
-    parseFile = function(e) {
-      var file, files, reader, _i, _len, _results;
-      e.stopPropagation();
-      e.preventDefault();
-      files = e.dataTransfer.files;
-      fileDrag(e);
-      _results = [];
-      for (_i = 0, _len = files.length; _i < _len; _i++) {
-        file = files[_i];
-        reader = new FileReader();
-        if (file.type.indexOf("image") === 0) {
-          reader.onload = (function(file) {
-            return function(e) {
-              var icon;
-              icon = new Image();
-              icon.setSrc(e.target.result);
-              icon.setName(file.name);
-              return icon.onload = function() {
-                icon.setPosition(this._canvas.place(icon.width, icon.height));
-                this._icons.push(icon);
-                this._code.render(icon, files.length, false);
-                this._canvas.render(icon, files.length);
-                return this._iconOnloadCallback();
-              };
-            };
-          })(file);
-          _results.push(reader.readAsDataURL(file));
-        } else {
-          _results.push(void 0);
-        }
-      }
-      return _results;
-    };
-
-    fit = function() {
-      return this._canvas.fit(this._icons);
-    };
-
-    convert = function() {
-      return this._code.convert();
-    };
-
-    clear = function() {
+    App.prototype._clear = function() {
       this._icons = [];
       this._canvas.clear();
       this._code.clear();
       return message.setMessage("app", "Now your project is empty", "production");
     };
 
-    deleteIcon = function(icon) {
+    App.prototype._deleteIcon = function(icon) {
       this._icons = _.reject(this._icons, function(currentIcon) {
         return currentIcon.name === icon.name;
       });
       this._canvas.deleteIcon(icon);
       this._code.deteleIcon(icon);
       return message.setMessage("app", "Icon " + icon.name + " deleted", "production");
+    };
+
+    fileDrag = function(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      return e.target.className = e.type === "dragover" ? "hover" : "";
     };
 
     App.checkBrowserCompatibility = function() {
@@ -235,9 +223,7 @@
   })();
 
   Canvas = (function() {
-    var $area, $background, addingArray, context, height, numElementsCounter, resizeCallback, space, stopCallback, width;
-
-    $area = {};
+    var $background, addingArray, context, height, numElementsCounter, resizeCallback, space, stopCallback, width;
 
     $background = {};
 
@@ -261,17 +247,17 @@
       if (!ctx) {
         return false;
       }
-      $area = $(ctx.area);
+      this.$area = $(ctx.area);
       $background = $(ctx.background);
       resizeCallback = ctx.resizeCallback;
       stopCallback = ctx.stopCallback;
-      context = $area[0].getContext("2d");
-      height = $area.height();
-      width = $area.width();
+      context = this.$area[0].getContext("2d");
+      height = this.$area.height();
+      width = this.$area.width();
       space = new Space(width, height);
-      $area.resizable({
+      this.$area.resizable({
         helper: "ui-resizable-helper",
-        maxWidth: $area.parent().width() - parseInt($area.css("marginRight")) * 2,
+        maxWidth: this.$area.parent().width() - parseInt(this.$area.css("marginRight")) * 2,
         handles: "se",
         resize: function(e, ui) {
           return resizeCallback(e, ui);
@@ -288,21 +274,17 @@
       });
     }
 
-    Canvas.prototype.getArea = function() {
-      return $area;
-    };
-
     Canvas.prototype.setHeight = function(newHeight) {
       if (newHeight) {
         height = newHeight;
-        return $area.attr("height", height);
+        return this.$area.attr("height", height);
       }
     };
 
     Canvas.prototype.setWidth = function(newWidth) {
       if (newWidth) {
         width = newWidth;
-        return $area.attr("width", width);
+        return this.$area.attr("width", width);
       }
     };
 
@@ -320,7 +302,7 @@
 
     Canvas.prototype.getMousePos = function(e) {
       var rect;
-      rect = $area[0].getBoundingClientRect();
+      rect = this.$area[0].getBoundingClientRect();
       return {
         x: e.clientX - rect.left,
         y: e.clientY - rect.top
@@ -376,14 +358,14 @@
       oldHeight = height;
       this.setWidth(newSpaceArea.width);
       this.setHeight(newSpaceArea.height);
-      $area.css({
+      this.$area.css({
         width: width,
         height: height
       });
       this.drawImage(Icons);
       newBackgroundWidth = $background.width() + width - oldWidth;
       newBackgroundHeight = $background.height() + height - oldHeight;
-      $area.closest(".ui-wrapper").animate({
+      this.$area.closest(".ui-wrapper").animate({
         width: width,
         height: height
       });
@@ -834,3 +816,5 @@
   })();
 
 }).call(this);
+
+//# sourceMappingURL=app.js.map

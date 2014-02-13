@@ -43,11 +43,37 @@ class App
     @_canvasIconTooltip = params.canvasIconTooltip
 
     #drop icons events
-    @_canvas.getArea().on
+    @_canvas.$area.on
       dragover: fileDrag
       dragleave: fileDrag
-      drop: parseFile
-      click: (e) ->
+      drop: (e) =>
+        # parse the droped images
+        e.stopPropagation()
+        e.preventDefault()
+
+        files = e.dataTransfer.files
+
+        fileDrag(e)
+
+        #load images and render them
+        for file in files
+          reader = new FileReader()
+          if file.type.indexOf("image") == 0
+            #only images are allowed
+            reader.onload = do (file) =>
+              (e) =>
+                icon = new Image()
+                icon.setSrc(e.target.result)
+                icon.setName(file.name)
+
+                icon.onload = =>
+                  icon.setPosition(@_canvas.place(icon.width, icon.height))
+                  @_icons.push(icon)
+                  @_code.render(icon, files.length, false)
+                  @_canvas.render(icon, files.length)
+                  @_iconOnloadCallback()
+            reader.readAsDataURL(file)
+      click: (e) =>
         e.stopPropagation()
         @_canvasIconTooltip.$tooltip.off(".deleteIcon")
 
@@ -66,16 +92,16 @@ class App
             width: 150
             marginLeft: -75
 
-          @_canvasIconTooltip.$tooltip.on "click.deleteIcon", @_canvasIconTooltip.buttons.deleteIcon, ->
-            deleteIcon(selectedIcon)
+          @_canvasIconTooltip.$tooltip.on "click.deleteIcon", @_canvasIconTooltip.buttons.deleteIcon, =>
+            @_deleteIcon(selectedIcon)
 
-          $("body").on "click.iconSelection", ->
+          $("body").on "click.iconSelection", =>
             @_canvasIconTooltip.$tooltip.off(".deleteIcon")
             @_canvasIconTooltip.$tooltip.addClass("hidden")
             $(@).off(".iconSelection")
 
     #re-render icons
-    $(document).on "rerender", (e, ui) ->
+    $(document).on "rerender", (e, ui) =>
       for icon in @_icons
         newPosition = @_canvas.place(icon.width, icon.height)
         icon.left = newPosition.left
@@ -87,19 +113,19 @@ class App
       @_reRenderCallback(e, ui)
 
     #initialize buttons behaviors
-    $(document).ready ->
+    $(document).ready =>
       $(@_buttons.fit).on "click", =>
         #fit canvas to the space occupied by the icons
-        fit()
+        @_canvas.fit(@_icons)
 
       $(@_buttons.convert).on "click", =>
         #if the images name are properly formatted covert the to
         #pseudo-classes
-        convert()
+        @_code.convert()
 
       $(@_buttons.clear).on "click", =>
         #clear canvas and code
-        clear()
+        @_clear()
 
       $(@_buttons.save).on "click", =>
         #save the icons in a json file
@@ -121,11 +147,11 @@ class App
         #load json file
         $(@_buttons.loadInput).val("").trigger("click")
 
-      $(@_buttons.loadInput).on "change", (e) ->
-        file = $(@)[0].files[0]
+      $(@_buttons.loadInput).on "change", (e) =>
+        file = $(this)[0].files[0]
 
         reader = new FileReader()
-        reader.onload = (e) ->
+        reader.onload = (e) =>
           jsonFile = e.srcElement.result
           try
             loadedIcons = JSON.parse(jsonFile)
@@ -133,7 +159,7 @@ class App
             message.setMessage("App", "Your JSON file has some issues. #{error}", "production")
 
           #create the canvas
-          clear()
+          @_clear()
 
           for loadedIcon in loadedIcons
             icon = new Image()
@@ -148,10 +174,10 @@ class App
 
         reader.readAsText(file)
 
-      @_$downloadAnchor.on "click", ->
+      @_$downloadAnchor.on "click", =>
         #download canvas and code
-        canvasHtmlElement = @_canvas.getArea()[0]
-        canvasHtmlElement.toBlob (blob) ->
+        canvasHtmlElement = @_canvas.$area[0]
+        canvasHtmlElement.toBlob (blob) =>
           saveAs(blob, "#{@_downloadFileName}.png")
 
         codeText = @_code.getCode().text()
@@ -159,59 +185,16 @@ class App
         saveAs(codeFile, @_downloadFileName + "." + @_code.getFormat())
 
   #
-  # private instance methods
+  # 'private' prototype methods
   #
-  fileDrag = (e) ->
-    # images enter or exit the drop area
-    e.stopPropagation()
-    e.preventDefault()
-    e.target.className = if e.type == "dragover" then "hover" else ""
-
-  parseFile = (e) ->
-    # parse the droped images
-    e.stopPropagation()
-    e.preventDefault()
-
-    files = e.dataTransfer.files
-
-    fileDrag(e)
-
-    #load images and render them
-    for file in files
-      reader = new FileReader()
-      if file.type.indexOf("image") == 0
-        #only images are allowed
-        reader.onload = do (file) ->
-          (e) ->
-            icon = new Image()
-            icon.setSrc(e.target.result)
-            icon.setName(file.name)
-
-            icon.onload = ->
-              icon.setPosition(@_canvas.place(icon.width, icon.height))
-              @_icons.push(icon)
-              @_code.render(icon, files.length, false)
-              @_canvas.render(icon, files.length)
-              @_iconOnloadCallback()
-        reader.readAsDataURL(file)
-
-  fit = ->
-    #fit canvas to current icons dimensions and positions
-    @_canvas.fit(@_icons)
-
-  convert = ->
-    #if the images name are properly formatted covert the to
-    #pseudo-classes
-    @_code.convert()
-
-  clear = ->
+  _clear: ->
     #clear canvas and code
     @_icons = []
     @_canvas.clear()
     @_code.clear()
     message.setMessage("app", "Now your project is empty", "production")
 
-  deleteIcon = (icon) ->
+  _deleteIcon: (icon) ->
     @_icons = _.reject @_icons, (currentIcon) ->
       currentIcon.name == icon.name
 
@@ -221,7 +204,16 @@ class App
     message.setMessage("app", "Icon #{icon.name} deleted", "production")
 
   #
-  # public static methods
+  # private class methods
+  #
+  fileDrag = (e) ->
+    # images enter or exit the drop area
+    e.stopPropagation()
+    e.preventDefault()
+    e.target.className = if e.type == "dragover" then "hover" else ""
+
+  #
+  # public class methods
   #
   @checkBrowserCompatibility: ->
     if window.File and window.FileList and window.FileReader
