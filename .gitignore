@@ -1,2 +1,4 @@
 .idea/
 .sass-cache/
+*.map
+*.src.coffee

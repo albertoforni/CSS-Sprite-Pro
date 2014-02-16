@@ -1,21 +1,27 @@
 class Canvas
 
   #
-  # private instance properties
+  # 'private' instance properties
   #
 
-  $area = {}
-  $background = {} #jQuery element which holds the background of the canvas
+  # @_$background = {} #jQuery element which holds the background of the canvas
 
-  resizeCallback = null
-  stopCallback = null
-  context = {} #canvas context must be 2d
-  height = 0
-  width = 0
-  space = {} #object that handles the position of the icons inside the canvas. It is istanciated at render
+  # @_resizeCallback = null
+  # @_stopCallback = null
 
-  numElementsCounter = 1
-  addingArray = []
+  # @_height = 0
+  # @_width = 0
+  # @_space = {} #object that handles the position of the icons inside the canvas. It is istanciated at render
+
+  # @_numElementsCounter = 1
+  # @_addingArray = []
+
+  #
+  # public instance properties
+  #
+
+  # @$area = {}
+  # @context = {} #canvas context must be 2d
 
   #
   # constructor
@@ -24,22 +30,25 @@ class Canvas
     unless ctx
       return false
 
-    $area = $(ctx.area)
-    $background =  $(ctx.background)
+    @$area = $(ctx.area)
+    @_$background =  $(ctx.background)
 
-    resizeCallback = ctx.resizeCallback
-    stopCallback = ctx.stopCallback
-    context = $area[0].getContext("2d")
-    height = $area.height()
-    width = $area.width()
-    space = new Space(width, height)
+    @_resizeCallback = ctx.resizeCallback
+    @_stopCallback = ctx.stopCallback
+    @context = @$area[0].getContext("2d")
+    @_height = @$area.height()
+    @_width = @$area.width()
+    @_space = new Space(@_width, @_height)
 
-    $area.resizable
+    @_numElementsCounter = 1
+    @_addingArray = []
+
+    @$area.resizable
       helper: "ui-resizable-helper"
-      maxWidth: $area.parent().width() - parseInt($area.css("marginRight")) * 2
+      maxWidth: @$area.parent().width() - parseInt(@$area.css("marginRight")) * 2
       handles: "se"
-      resize: (e, ui) ->
-        resizeCallback(e,ui)
+      resize: (e, ui) =>
+        @_resizeCallback(e,ui)
       stop: (e,ui) =>
         #re-render icons
         @setWidth(ui.size.width)
@@ -47,67 +56,55 @@ class Canvas
         @clear()
         $(document).trigger("rerender", ui)
 
-        stopCallback(e,ui)
-
+        @_stopCallback(e,ui)
 
   #
-  # public static methods
+  # public instance methods
   #
-  getArea: ->
-    $area
 
   setHeight: (newHeight)->
     if newHeight
-      height = newHeight
-      $area.attr("height", height)
+      @_height = newHeight
+      @$area.attr("height", @_height)
 
   setWidth: (newWidth)->
     if newWidth
-      width = newWidth
-      $area.attr("width", width)
-
-  getHeight: ->
-    height
-
-  getWidth: ->
-    width
-
-  getContext: ->
-    context
+      @_width = newWidth
+      @$area.attr("width", @_width)
 
   getMousePos: (e) ->
-    rect = $area[0].getBoundingClientRect()
+    rect = @$area[0].getBoundingClientRect()
     return {
       x: e.clientX - rect.left
       y: e.clientY - rect.top
     }
 
   place: (width, height) ->
-    space.place(width,height)
+    @_space.place(width,height)
 
   clear: () ->
-    addingArray = []
-    space.clear(width,height)
-    context.clearRect(0, 0, width, height)
+    @_addingArray = []
+    @_space.clear(@_width,@_height)
+    @context.clearRect(0, 0, @_width, @_height)
 
   drawImage: (IconsArray) ->
     #draw icons into the canvas
     for icon in IconsArray
       #use the canvas method
-      @getContext().drawImage(icon, icon.left, icon.top)
+      @context.drawImage(icon, icon.left, icon.top)
 
   render: (Icon, numElements) ->
     #prepare to draw into the canvas
     unless Icon
       return false
 
-    addingArray.push(Icon)
-    if numElementsCounter < numElements
+    @_addingArray.push(Icon)
+    if @_numElementsCounter < numElements
       # it means all the icons haven't been loaded yet
-      numElementsCounter++
+      @_numElementsCounter++
     else
       # all icons have been loaded
-      @drawImage(addingArray)
+      @drawImage(@_addingArray)
 
     return @
 
@@ -123,33 +120,33 @@ class Canvas
   fit: (Icons) ->
     #fit canvas size to the icons and redraw them
 
-    space.fit()
-    newSpaceArea = space.getArea()
+    @_space.fit()
+    newSpaceArea = @_space.getArea()
 
     #retrieve old width and height
-    oldWidth = width
-    oldHeight = height
+    oldWidth = @_width
+    oldHeight = @_height
 
     #set new area
     @setWidth(newSpaceArea.width)
     @setHeight(newSpaceArea.height)
 
-    $area.css
-      width: width
-      height: height
+    @$area.css
+      width: @_width
+      height: @_height
 
     #redraw icons
     @drawImage(Icons)
 
     #graphical settings
-    newBackgroundWidth = $background.width() + width - oldWidth
-    newBackgroundHeight = $background.height() + height - oldHeight
+    newBackgroundWidth = @_$background.width() + @_width - oldWidth
+    newBackgroundHeight = @_$background.height() + @_height - oldHeight
 
-    $area.closest(".ui-wrapper").animate
-      width: width
-      height: height
+    @$area.closest(".ui-wrapper").animate
+      width: @_width
+      height: @_height
 
-    $background.animate
+    @_$background.animate
       width: newBackgroundWidth
       height: newBackgroundHeight
 
@@ -157,11 +154,11 @@ class Canvas
 
   deleteIcon: (icon) ->
     #remove icon from adding array
-    addingArray = _.reject addingArray, (currentIcon) ->
+    @_addingArray = _.reject @_addingArray, (currentIcon) ->
       currentIcon.name == icon.name
 
     #delete from space
-    space.deleteElement(icon.left, icon.top, icon.width, icon.height)
+    @_space.deleteElement(icon.left, icon.top, icon.width, icon.height)
 
     #delete from canvas
-    context.clearRect(icon.left, icon.top, icon.width, icon.height)
+    @context.clearRect(icon.left, icon.top, icon.width, icon.height)

@@ -223,52 +223,36 @@
   })();
 
   Canvas = (function() {
-    var $background, addingArray, context, height, numElementsCounter, resizeCallback, space, stopCallback, width;
-
-    $background = {};
-
-    resizeCallback = null;
-
-    stopCallback = null;
-
-    context = {};
-
-    height = 0;
-
-    width = 0;
-
-    space = {};
-
-    numElementsCounter = 1;
-
-    addingArray = [];
-
     function Canvas(ctx) {
       if (!ctx) {
         return false;
       }
       this.$area = $(ctx.area);
-      $background = $(ctx.background);
-      resizeCallback = ctx.resizeCallback;
-      stopCallback = ctx.stopCallback;
-      context = this.$area[0].getContext("2d");
-      height = this.$area.height();
-      width = this.$area.width();
-      space = new Space(width, height);
+      this._$background = $(ctx.background);
+      this._resizeCallback = ctx.resizeCallback;
+      this._stopCallback = ctx.stopCallback;
+      this.context = this.$area[0].getContext("2d");
+      this._height = this.$area.height();
+      this._width = this.$area.width();
+      this._space = new Space(this._width, this._height);
+      this._numElementsCounter = 1;
+      this._addingArray = [];
       this.$area.resizable({
         helper: "ui-resizable-helper",
         maxWidth: this.$area.parent().width() - parseInt(this.$area.css("marginRight")) * 2,
         handles: "se",
-        resize: function(e, ui) {
-          return resizeCallback(e, ui);
-        },
+        resize: (function(_this) {
+          return function(e, ui) {
+            return _this._resizeCallback(e, ui);
+          };
+        })(this),
         stop: (function(_this) {
           return function(e, ui) {
             _this.setWidth(ui.size.width);
             _this.setHeight(ui.size.height);
             _this.clear();
             $(document).trigger("rerender", ui);
-            return stopCallback(e, ui);
+            return _this._stopCallback(e, ui);
           };
         })(this)
       });
@@ -276,28 +260,16 @@
 
     Canvas.prototype.setHeight = function(newHeight) {
       if (newHeight) {
-        height = newHeight;
-        return this.$area.attr("height", height);
+        this._height = newHeight;
+        return this.$area.attr("height", this._height);
       }
     };
 
     Canvas.prototype.setWidth = function(newWidth) {
       if (newWidth) {
-        width = newWidth;
-        return this.$area.attr("width", width);
+        this._width = newWidth;
+        return this.$area.attr("width", this._width);
       }
-    };
-
-    Canvas.prototype.getHeight = function() {
-      return height;
-    };
-
-    Canvas.prototype.getWidth = function() {
-      return width;
-    };
-
-    Canvas.prototype.getContext = function() {
-      return context;
     };
 
     Canvas.prototype.getMousePos = function(e) {
@@ -310,13 +282,13 @@
     };
 
     Canvas.prototype.place = function(width, height) {
-      return space.place(width, height);
+      return this._space.place(width, height);
     };
 
     Canvas.prototype.clear = function() {
-      addingArray = [];
-      space.clear(width, height);
-      return context.clearRect(0, 0, width, height);
+      this._addingArray = [];
+      this._space.clear(this._width, this._height);
+      return this.context.clearRect(0, 0, this._width, this._height);
     };
 
     Canvas.prototype.drawImage = function(IconsArray) {
@@ -324,7 +296,7 @@
       _results = [];
       for (_i = 0, _len = IconsArray.length; _i < _len; _i++) {
         icon = IconsArray[_i];
-        _results.push(this.getContext().drawImage(icon, icon.left, icon.top));
+        _results.push(this.context.drawImage(icon, icon.left, icon.top));
       }
       return _results;
     };
@@ -333,11 +305,11 @@
       if (!Icon) {
         return false;
       }
-      addingArray.push(Icon);
-      if (numElementsCounter < numElements) {
-        numElementsCounter++;
+      this._addingArray.push(Icon);
+      if (this._numElementsCounter < numElements) {
+        this._numElementsCounter++;
       } else {
-        this.drawImage(addingArray);
+        this.drawImage(this._addingArray);
       }
       return this;
     };
@@ -352,24 +324,24 @@
 
     Canvas.prototype.fit = function(Icons) {
       var newBackgroundHeight, newBackgroundWidth, newSpaceArea, oldHeight, oldWidth;
-      space.fit();
-      newSpaceArea = space.getArea();
-      oldWidth = width;
-      oldHeight = height;
+      this._space.fit();
+      newSpaceArea = this._space.getArea();
+      oldWidth = this._width;
+      oldHeight = this._height;
       this.setWidth(newSpaceArea.width);
       this.setHeight(newSpaceArea.height);
       this.$area.css({
-        width: width,
-        height: height
+        width: this._width,
+        height: this._height
       });
       this.drawImage(Icons);
-      newBackgroundWidth = $background.width() + width - oldWidth;
-      newBackgroundHeight = $background.height() + height - oldHeight;
+      newBackgroundWidth = this._$background.width() + this._width - oldWidth;
+      newBackgroundHeight = this._$background.height() + this._height - oldHeight;
       this.$area.closest(".ui-wrapper").animate({
-        width: width,
-        height: height
+        width: this._width,
+        height: this._height
       });
-      $background.animate({
+      this._$background.animate({
         width: newBackgroundWidth,
         height: newBackgroundHeight
       });
@@ -377,11 +349,11 @@
     };
 
     Canvas.prototype.deleteIcon = function(icon) {
-      addingArray = _.reject(addingArray, function(currentIcon) {
+      this._addingArray = _.reject(this._addingArray, function(currentIcon) {
         return currentIcon.name === icon.name;
       });
-      space.deleteElement(icon.left, icon.top, icon.width, icon.height);
-      return context.clearRect(icon.left, icon.top, icon.width, icon.height);
+      this._space.deleteElement(icon.left, icon.top, icon.width, icon.height);
+      return this.context.clearRect(icon.left, icon.top, icon.width, icon.height);
     };
 
     return Canvas;
