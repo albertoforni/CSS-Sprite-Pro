@@ -178,11 +178,11 @@
             canvasHtmlElement.toBlob(function(blob) {
               return saveAs(blob, "" + _this._downloadFileName + ".png");
             });
-            codeText = _this._code.getCode().text();
+            codeText = _this._code.$code.text();
             codeFile = new Blob([codeText], {
               type: "text/css;charset=utf-8;"
             });
-            return saveAs(codeFile, _this._downloadFileName + "." + _this._code.getFormat());
+            return saveAs(codeFile, _this._downloadFileName + "." + _this._code.format);
           });
         };
       })(this));
@@ -223,6 +223,10 @@
   })();
 
   Canvas = (function() {
+    Canvas.prototype._numElementsCounter = 1;
+
+    Canvas.prototype._addingArray = [];
+
     function Canvas(ctx) {
       if (!ctx) {
         return false;
@@ -235,8 +239,6 @@
       this._height = this.$area.height();
       this._width = this.$area.width();
       this._space = new Space(this._width, this._height);
-      this._numElementsCounter = 1;
-      this._addingArray = [];
       this.$area.resizable({
         helper: "ui-resizable-helper",
         maxWidth: this.$area.parent().width() - parseInt(this.$area.css("marginRight")) * 2,
@@ -361,25 +363,15 @@
   })();
 
   Code = (function() {
-    var $area, $code, $formatSelector, addingArray, buildHtml, codeStack, data, fileName, filter, firstRowShown, format, formatArray, numElementsCounter, psudoClasses, template, _this;
+    Code.prototype._codeStack = [];
 
-    _this = {};
+    Code.prototype._numElementsCounter = 1;
 
-    $area = {};
+    Code.prototype._addingArray = [];
 
-    $code = {};
+    Code._formatArray = ["css", "less", "scss", "sass"];
 
-    filter = {};
-
-    data = {};
-
-    $formatSelector = {};
-
-    formatArray = ["css", "less", "scss", "sass"];
-
-    fileName = "";
-
-    template = {
+    Code._template = {
       css: {
         start: "i {\n  background-image: url('{{fileName}}.png');\n  display: inline-block;\n}\n",
         block: "i.{{name}}  {\n  background-position: {{#if left}}-{{/if}}{{left}}px {{#if top}}-{{/if}}{{top}}px;\n  height: {{height}}px;\n  width: {{width}}px;\n}\n",
@@ -402,40 +394,32 @@
       }
     };
 
-    format = {};
-
-    firstRowShown = false;
-
-    codeStack = [];
-
-    psudoClasses = ["link", "visited", "hover", "active"];
-
-    numElementsCounter = 1;
-
-    addingArray = [];
+    Code._psudoClasses = ["link", "visited", "hover", "active"];
 
     function Code(params) {
       if (!params) {
         return false;
       }
-      _this = this;
-      $area = $(params.area);
-      $code = $(params.code);
-      fileName = params.fileName;
-      filter = params.filter;
-      data = params.data;
-      $formatSelector = $(params.format);
-      if (_.contains(formatArray, $formatSelector.filter(filter).data(data))) {
-        format = $formatSelector.filter(filter).data(data);
+      this.$area = $(params.area);
+      this.$code = $(params.code);
+      this._fileName = params.fileName;
+      this._filter = params.filter;
+      this._data = params.data;
+      this._$formatSelector = $(params.format);
+      this._firstRowShown = false;
+      if (_.contains(Code._formatArray, this._$formatSelector.filter(this._filter).data(this._data))) {
+        this.format = this._$formatSelector.filter(this._filter).data(this._data);
       } else {
-        format = formatArray[0];
+        this.format = Code._formatArray[0];
       }
-      $formatSelector.on("formatCodeSelected", function() {
-        format = $(this).find(filter).data(data);
-        if (firstRowShown) {
-          return _this.render(codeStack, void 0, true);
-        }
-      });
+      this._$formatSelector.on("formatCodeSelected", (function(_this) {
+        return function() {
+          _this.format = $(this).find(_this._filter).data(_this._data);
+          if (_this._firstRowShown) {
+            return _this.render(_this._codeStack, void 0, true);
+          }
+        };
+      })(this));
       Handlebars.registerHelper("if", function(conditional, options) {
         if (conditional) {
           return options.fn(this);
@@ -453,55 +437,48 @@
       }
       html = "";
       if (refactor === false) {
-        addingArray.push(element);
-        if (numElementsCounter < numElements) {
-          numElementsCounter++;
+        this._addingArray.push(element);
+        if (this._numElementsCounter < numElements) {
+          this._numElementsCounter++;
         } else {
-          $code[0].innerHTML = $code[0].innerHTML.substring(0, $code[0].innerHTML.length - 2);
-          html = buildHtml(addingArray);
-          codeStack = codeStack.concat(addingArray);
-          numElementsCounter = 1;
-          addingArray = [];
+          this.$code[0].innerHTML = this.$code[0].innerHTML.substring(0, this.$code[0].innerHTML.length - 2);
+          html = this._buildHtml(this._addingArray);
+          this._codeStack = this._codeStack.concat(this._addingArray);
+          this._numElementsCounter = 1;
+          this._addingArray = [];
         }
       } else {
-        $code[0].innerHTML = "";
-        firstRowShown = false;
-        html = buildHtml(codeStack);
+        this.$code[0].innerHTML = "";
+        this._firstRowShown = false;
+        html = this._buildHtml(this._codeStack);
       }
-      return Rainbow.color(html, "css", function(highlighted_code) {
-        return $code.append(highlighted_code);
-      });
+      return Rainbow.color(html, "css", (function(_this) {
+        return function(highlighted_code) {
+          return _this.$code.append(highlighted_code);
+        };
+      })(this));
     };
 
     Code.prototype.reRender = function() {
       var html;
-      $code[0].innerHTML = "";
-      firstRowShown = false;
-      html = buildHtml(codeStack);
-      return Rainbow.color(html, "css", function(highlighted_code) {
-        return $code.append(highlighted_code);
-      });
-    };
-
-    Code.prototype.getArea = function() {
-      return $area;
-    };
-
-    Code.prototype.getCode = function() {
-      return $code;
-    };
-
-    Code.prototype.getFormat = function() {
-      return format;
+      this.$code[0].innerHTML = "";
+      this._firstRowShown = false;
+      html = this._buildHtml(this._codeStack);
+      return Rainbow.color(html, "css", (function(_this) {
+        return function(highlighted_code) {
+          return _this.$code.append(highlighted_code);
+        };
+      })(this));
     };
 
     Code.prototype.convert = function() {
       var newCodeStack;
       newCodeStack = [];
-      _.each(codeStack, function(element) {
-        var psudoClass, _i, _len;
-        for (_i = 0, _len = psudoClasses.length; _i < _len; _i++) {
-          psudoClass = psudoClasses[_i];
+      _.each(this._codeStack, function(element) {
+        var psudoClass, _i, _len, _ref;
+        _ref = Code._psudoClasses;
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          psudoClass = _ref[_i];
           if (element.name.indexOf("_" + psudoClass) !== -1) {
             element.name = element.name.replace("_" + psudoClass, ":" + psudoClass);
             break;
@@ -509,57 +486,59 @@
         }
         return newCodeStack.push(element);
       });
-      codeStack = newCodeStack;
-      this.render(codeStack, codeStack.length, true, false);
+      this._codeStack = newCodeStack;
+      this.render(this._codeStack, this._codeStack.length, true, false);
       return message.setMessage("code", "File's names converted to psudo-classes", "production");
     };
 
     Code.prototype.clear = function() {
-      codeStack = [];
-      $code[0].innerHTML = "";
-      return firstRowShown = false;
+      this._codeStack = [];
+      this.$code[0].innerHTML = "";
+      return this._firstRowShown = false;
     };
 
     Code.prototype.highlightElement = function(icon) {
-      return $code.find(".class").each(function() {
-        var $icon;
-        $icon = $(this);
-        if (icon.name === $icon.text().replace(".", "")) {
-          $icon.scrollView({
-            container: $area,
-            complete: function() {
-              return $icon.effect("highlight");
-            }
-          });
-        }
-      });
+      return this.$code.find(".class").each((function(_this) {
+        return function() {
+          var $icon;
+          $icon = $(this);
+          if (icon.name === $icon.text().replace(".", "")) {
+            $icon.scrollView({
+              container: _this.$area,
+              complete: function() {
+                return $icon.effect("highlight");
+              }
+            });
+          }
+        };
+      })(this));
     };
 
     Code.prototype.deteleIcon = function(icon) {
-      codeStack = _.reject(codeStack, function(currentIcon) {
+      this._codeStack = _.reject(this._codeStack, function(currentIcon) {
         return currentIcon.name === icon.name;
       });
       return this.reRender();
     };
 
-    buildHtml = function(elements) {
+    Code.prototype._buildHtml = function(elements) {
       var element, html, templ, _i, _len;
       if (!$.isArray(elements)) {
         message.setMessage("code", "elments to render must be an array", "debug");
       }
-      templ = Handlebars.compile(template[format].block);
+      templ = Handlebars.compile(Code._template[this.format].block);
       html = "";
-      if (firstRowShown === false) {
-        html += Handlebars.compile(template[format].start)({
-          fileName: fileName
+      if (this._firstRowShown === false) {
+        html += Handlebars.compile(Code._template[this.format].start)({
+          fileName: this._fileName
         });
-        firstRowShown = true;
+        this._firstRowShown = true;
       }
       for (_i = 0, _len = elements.length; _i < _len; _i++) {
         element = elements[_i];
         html += templ(element);
       }
-      return html += template[format].end;
+      return html += Code._template[this.format].end;
     };
 
     return Code;

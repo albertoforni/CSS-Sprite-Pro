@@ -13,8 +13,8 @@ class Canvas
   # @_width = 0
   # @_space = {} #object that handles the position of the icons inside the canvas. It is istanciated at render
 
-  # @_numElementsCounter = 1
-  # @_addingArray = []
+  _numElementsCounter: 1
+  _addingArray: []
 
   #
   # public instance properties
@@ -39,9 +39,6 @@ class Canvas
     @_height = @$area.height()
     @_width = @$area.width()
     @_space = new Space(@_width, @_height)
-
-    @_numElementsCounter = 1
-    @_addingArray = []
 
     @$area.resizable
       helper: "ui-resizable-helper"

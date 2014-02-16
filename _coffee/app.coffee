@@ -180,9 +180,9 @@ class App
         canvasHtmlElement.toBlob (blob) =>
           saveAs(blob, "#{@_downloadFileName}.png")
 
-        codeText = @_code.getCode().text()
+        codeText = @_code.$code.text()
         codeFile = new Blob([codeText], {type: "text/css;charset=utf-8;"})
-        saveAs(codeFile, @_downloadFileName + "." + @_code.getFormat())
+        saveAs(codeFile, @_downloadFileName + "." + @_code.format)
 
   #
   # 'private' prototype methods
