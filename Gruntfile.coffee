@@ -1,7 +1,8 @@
 module.exports = (grunt) ->
   grunt.loadNpmTasks('grunt-contrib-coffee')
   grunt.loadNpmTasks('grunt-contrib-watch')
-  grunt.loadNpmTasks('grunt-contrib-compass');
+  grunt.loadNpmTasks('grunt-contrib-compass')
+  grunt.loadNpmTasks('grunt-contrib-haml')
 
   grunt.initConfig
     watch:
@@ -9,8 +10,11 @@ module.exports = (grunt) ->
         files: '_coffee/*.coffee'
         tasks: ['coffee:compileJoined']
       compass:
-        files: '_scss/main.scss'
+        files: '_scss/styles.scss'
         tasks: ['compass:dist']
+      haml:
+        files: '_haml/index.haml'
+        tasks: ['haml:dist']
 
     coffee:
       compileJoined:
@@ -27,5 +31,10 @@ module.exports = (grunt) ->
           sassDir: '_scss',
           cssDir: 'css',
           environment: 'production'
+
+    haml:
+      dist:
+        files:
+          'index.html': '_haml/index.haml'
 
   grunt.registerTask 'default', ['watch']

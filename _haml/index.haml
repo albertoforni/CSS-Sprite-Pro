@@ -1,0 +1,114 @@
+!!!
+%html{:lang => "en"}
+%head 
+  %meta{:charset => "UTF-8"}/ 
+  %title CSS Sprite Pro
+
+  %link{href: "https://fonts.googleapis.com/css?family=Raleway:400,300,700", rel: "stylesheet"}
+  %link{href: "https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css", rel: "stylesheet"}
+  %link{href: "css/codeStyle.css", rel: "stylesheet"}
+  %link{href: "css/guiders.css", rel: "stylesheet"}
+  %link{href: "css/styles.css", rel: "stylesheet"}
+  
+%body
+  <!--[if lt IE 7]>
+  <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+  <![endif]-->
+
+  %hr.line-fat
+
+  .l-container
+
+    %header.l-row
+      .l-col4
+        %h1.text-title CSS Sprite Pro
+
+      %ul#links.l-pull-right.horizontal-list 
+        
+        %li.horizontal-list-el
+          %a.l-hidden.horizontal-list-el-innerContent{href: 'http://www.albertoforni.com', target:'_blank'} @albertoforni
+          %a.l-hidden.horizontal-list-el-innerContent{href: 'http://www.saramichelazzo.com', target:'_blank'} @SaraMichelazzo
+          %span.horizontal-list-el-innerContent.js-menuElement follow us
+        
+        %li.horizontal-list-el
+          %a.horizontal-list-el-innerContent{href:"https://www.gittip.com/albertoforni", target:"_blank"} donate
+        
+        %li.horizontal-list-el
+          %a.horizontal-list-el-innerContent#help{href:"#", target:"_blank"} help
+  
+    %div.l-row
+      #messagesContainer.l-col8 
+        #messages.messages
+          %span.messages-title &#123; Messages &#125;
+      
+      %section#actions.l-col4 
+        #downloadLink.button.button-link Download
+
+    %section#mainSection.l-row
+      
+      .l-row.l-noMargin
+        .col8.actionsButtons
+          %span.actionsButtons-action#fit Fit
+          %span.actionsButtons-action#convert Convert
+          %span.actionsButtons-action#clear Clear
+          %span.actionsButtons-action#save Save
+          %span.actionsButtons-action#load Load
+          %input.actionsButtons-action#loadInput.l-hidden{:accept => "application/json", :type => "file", :value => "Load"}
+      
+      .l-row
+        %section.l-col8.canvas-container
+          .canvas-background
+            %span.canvas-title Drag & Drop Icons
+          
+          %canvas.canvas-element#prevArea{:height => "400", :width => "600"}
+            %p Your browser does not support html5 canvas
+          
+          %p.canvas-updates.l-hidden
+          
+          #canvasIconsActions.tooltipButtons.l-hidden
+            %span.triangle-up
+            %span#deleteIcon.button Delete
+        
+        %aside#codeArea.code.l-col4
+          %span.code-title Get Code
+          
+          %ul#codeStyle.code-select.is-closed
+            %li.code-select-el.selected{"data-value" => "css"} css
+            %li.code-select-el{"data-value" => "sass"} Sass
+            %li.code-select-el{"data-value" => "scss"} Scss
+            %li.code-select-el{"data-value" => "less"} less
+          
+          %span.code-placeholder { }
+          
+          %pre#code.l-hidden
+            %code
+
+    %footer.l-row.l-noMargin
+      .ribbon-top
+      .ribbon-bottom
+        .ribbon-text Made in Italy with love
+        .ribbon-caret
+
+    %script{src: "//ajax.googleapis.com/ajax/libs/jquery/2.0.1/jquery.min.js"}
+    %script{src: "//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"}
+    %script{src: "js/plugins.js"}
+    %script{src: "js/vendor/handlebars.js"}
+    %script{src: "js/vendor/rainbow.min.js"}
+    %script{src: "js/vendor/language/generic.js"}
+    %script{src: "js/vendor/language/css.js"}
+    %script{src: "js/vendor/underscore.min.js"}
+    %script{src: "js/vendor/guiders.js"}
+    %script{src: "js/guiders.js"}
+    %script{src: "js/vendor/Blob.js"}
+    %script{src: "js/vendor/canvas-toBlob.js"}
+    %script{src: "js/vendor/FileSaver.js"}
+    %script{src: "js/icon.js"}
+    %script{src: "js/app.js"}
+    %script{src: "js/config.js"}
+
+
+    :javascript
+      var _gaq=[['_setAccount','UA-44058621-1'],['_trackPageview']];
+      (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+      g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+      s.parentNode.insertBefore(g,s)}(document,'script'));

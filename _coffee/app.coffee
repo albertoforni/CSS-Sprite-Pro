@@ -86,7 +86,7 @@ class App
 
         if selectedIcon
           @_code.highlightElement(selectedIcon)
-          @_canvasIconTooltip.$tooltip.removeClass("hidden").css
+          @_canvasIconTooltip.$tooltip.removeClass("l-hidden").css
             left: @_canvasIconTooltip.addToLeft + selectedIcon.left + selectedIcon.width / 2
             top:  @_canvasIconTooltip.addToTop + selectedIcon.top + selectedIcon.height
             width: 150
@@ -97,7 +97,7 @@ class App
 
           $("body").on "click.iconSelection", =>
             @_canvasIconTooltip.$tooltip.off(".deleteIcon")
-            @_canvasIconTooltip.$tooltip.addClass("hidden")
+            @_canvasIconTooltip.$tooltip.addClass("l-hidden")
             $(@).off(".iconSelection")
 
     #re-render icons
@@ -210,7 +210,7 @@ class App
     # images enter or exit the drop area
     e.stopPropagation()
     e.preventDefault()
-    e.target.className = if e.type == "dragover" then "hover" else ""
+    e.target.className = if e.type == "dragover" then "canvas-element ui-resizable is-hover" else "canvas-element ui-resizable"
 
   #
   # public class methods

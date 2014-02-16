@@ -1,6 +1,6 @@
-@mixin caret($point, $bottom, $border: 5px, $color: #ccc) {
+@mixin caret($point, $opposite, $border: 5px, $color: #ccc) {
   border: $border dashed transparent;
-  border-#{$bottom}: $border solid $color;
+  border-#{$opposite}: $border solid $color;
   border-#{$point}: 0;
   height: 0;
   width: 0;

@@ -2,3 +2,4 @@
 .sass-cache/
 *.map
 *.src.coffee
+.DS_Store

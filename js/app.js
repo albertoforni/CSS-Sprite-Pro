@@ -75,7 +75,7 @@
             }
             if (selectedIcon) {
               _this._code.highlightElement(selectedIcon);
-              _this._canvasIconTooltip.$tooltip.removeClass("hidden").css({
+              _this._canvasIconTooltip.$tooltip.removeClass("l-hidden").css({
                 left: _this._canvasIconTooltip.addToLeft + selectedIcon.left + selectedIcon.width / 2,
                 top: _this._canvasIconTooltip.addToTop + selectedIcon.top + selectedIcon.height,
                 width: 150,
@@ -86,7 +86,7 @@
               });
               return $("body").on("click.iconSelection", function() {
                 _this._canvasIconTooltip.$tooltip.off(".deleteIcon");
-                _this._canvasIconTooltip.$tooltip.addClass("hidden");
+                _this._canvasIconTooltip.$tooltip.addClass("l-hidden");
                 return $(_this).off(".iconSelection");
               });
             }
@@ -207,7 +207,7 @@
     fileDrag = function(e) {
       e.stopPropagation();
       e.preventDefault();
-      return e.target.className = e.type === "dragover" ? "hover" : "";
+      return e.target.className = e.type === "dragover" ? "canvas-element ui-resizable is-hover" : "canvas-element ui-resizable";
     };
 
     App.checkBrowserCompatibility = function() {

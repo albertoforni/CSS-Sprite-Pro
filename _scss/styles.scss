@@ -1,0 +1,388 @@
+@import "compass";
+// SMACSS APROACH
+
+// ++++ BASE
+@import "normalize";
+@import "utilities";
+
+// ++++ Colors
+$mainColor: rgb(103,195,255);
+$neutralColor0:rgb(68,68,68);
+$neutralColor1:rgb(255,255,255);
+$neutralColor2:rgb(221,221,221);
+$neutralColor3:rgb(238,238,238);
+// ---- Colors
+
+body {
+  font-family: 'Raleway', sans-serif;
+  background-color: $neutralColor3;
+}
+
+a {
+  text-decoration: none;
+  text-align: center;
+}
+
+ul {
+  margin-top: 0;
+  margin-bottom: 0;
+  padding: 0;
+  list-style: none;
+}
+// ---- BASE
+
+// ++++ LAYOUT
+@import "layout";
+
+$rowWidth: 100%; //generalmente 100%
+$cols: 12; //numero di colonne della griglia
+$gutter: 1%; //mantenere lo stesso formato della rowWidth, quindi px con px, % con %
+$maxWidth: 1170px; //default null
+
+@include createLayout($rowWidth, $cols, $gutter, $maxWidth);
+
+.l-container {
+  margin: 0 auto;
+}
+
+.l-hidden {
+  display: none !important;
+  visibility: hidden !important;
+}
+
+.l-pull-right {
+  float: right;
+}
+
+.l-row {
+  margin-bottom: 15px;
+}
+
+.l-noMargin {
+  margin: 0;
+}
+// ---- LAYOUT
+
+// ++++ MODULES
+
+// ++++ action-list module
+.actionsButtons-action {
+  display: block;
+  float: left;
+
+  height: 40px;
+  width: 100px;
+  margin-right: 5px;
+
+  line-height: 40px;
+  text-align: center;
+  cursor: pointer;
+  background-color: $neutralColor0;
+  color: $neutralColor1;
+  @include single-transition(all, 200ms, ease-in-out);
+  &:hover {
+    background-color: lighten($neutralColor0, 20%);
+  }
+}
+// ---- action-list module
+
+// ++++ bgr module
+.bgr-dark {
+  background-color: $neutralColor0;
+}
+// ---- bgr module
+
+
+// ++++ button module
+.button {
+  display: block;
+
+  color: $neutralColor1;
+  background-color: $mainColor;
+  text-align: center;
+  cursor: pointer;
+}
+
+.button-link {
+  padding: 0.6em;
+
+  font-size: 2em;
+  @include box-shadow(7px 7px 0 0 $neutralColor0);
+  @include single-transition(all, 200ms, ease-in-out);
+  &:hover {
+    @include box-shadow(3px 3px 0 0 $neutralColor0);
+  }
+}
+// ---- button module
+
+// ++++ canvas module
+$canvas-titleHeight: 50px;
+$canvas-margin: 15px;
+
+.canvas-container {
+  position: relative;
+}
+
+.canvas-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+
+  height: 400px + $canvas-titleHeight + $canvas-margin;
+  width: 600px + $canvas-margin * 2;
+
+  background-color: $neutralColor2; 
+}
+.canvas-title {
+  display: block;
+  text-align: center;
+  font-size: 2em;
+  font-weight: 300;
+}
+
+.canvas-element {
+  margin: 15px;
+  margin-top: 50px;
+  background: transparent;
+}
+
+.canvas-element.is-hover {
+  background-color: $mainColor;
+  opacity: 0.5;
+}
+
+.canvas-updates {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+
+  width: 200px;
+  height: 50px;
+  line-height: 50px;
+  margin-top: -25px;
+  margin-left: -100px;
+
+  @include border-radius(5px);
+  text-align: center;
+  background-color: $neutralColor0;
+  opacity: 0.5;
+  color: $neutralColor1;
+}
+// ---- canvas module
+
+// ++++ code title
+.code {
+  background-color: $neutralColor0;
+  height: 500px;
+  overflow-y: auto;
+}
+
+.code-title {
+  display: block;
+  width: 100%;
+  color: $neutralColor1;
+  text-align: center;
+  font-size: 2em;
+  font-weight: 300;
+}
+
+.code-select {
+  display: block;
+  overflow: hidden;
+
+  width: 70%;
+  margin: 10px auto;
+  border: none;
+  @include border-radius(5px);
+
+  background-color: #bbbbbb;
+  text-align: center;
+  font-size: 20px;
+  font-size: 1.5em;
+  color: #333333;
+
+  li {
+    display: none;
+    padding: 5px;
+    cursor: pointer;
+    &:first-child {
+      display: block;
+    }
+    &.selected, &:hover {
+      background-color: $mainColor;
+      color: $neutralColor1;
+    }
+  }
+}
+
+.code-placeholder {
+  display: block;
+  width: 100%;
+  color: $neutralColor1;
+  text-align: center;
+  font-size: 12em;
+  font-weight: 300;
+}
+// ---- code title
+
+// ++++ horizontal-list module
+.horizontal-list-el {
+  display: inline-block;
+  width: 150px;
+  text-align: center;
+  margin-right: 5px;
+  vertical-align: top;
+  @include border-radius(0 0 5px 5px);
+  overflow: hidden;
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.horizontal-list-el-innerContent {
+  display: block;
+  padding: 5px 0;
+  font-weight: 300;
+  color: $neutralColor1;
+  cursor: pointer;
+  background-color: $neutralColor0;
+  @include single-transition(background-color, 200ms, ease-in-out);
+  &:hover {
+    background-color: lighten($neutralColor0, 20%);
+  }
+}
+
+.horizontal-list-el-open {
+  background-color: $mainColor !important;
+}
+// ---- horizontal-list module
+
+// ++++ line module
+.line-fat {
+  border-width: 0;
+  border-top: 15px solid $mainColor;
+  margin: 0;
+}
+// ---- line module
+
+// ++++ messages module
+.messages {
+  position: relative;
+  overflow-y: auto;
+  overflow-x: hidden;
+  height: 77px;
+  width: 630px;
+  background-color: $neutralColor2;
+  padding: 1em;
+  @include box-sizing(border-box);
+}
+
+.messages-title {
+  display: block;
+  position: absolute;
+  top: 0.5em;
+  left: 0;
+    
+  width: 100%;
+
+  text-align: center;
+  font-size: 2em;
+  font-weight: 300;
+}
+// ---- messages module
+
+// ++++ ribbon module
+.ribbon-top {
+  float: right;
+
+  width: 10%;
+  height: 100px;
+
+  background-color: $neutralColor2;
+}
+
+.ribbon-bottom {
+  width: 100%;
+  clear: both;
+}
+
+.ribbon-text {
+  float: left;
+  
+  width: 90%;
+  height: 75px;
+  @include box-sizing(border-box);
+  padding-right: 15px;
+
+  line-height: 75px;
+  background-color: $neutralColor0;
+  color: $neutralColor1;
+  text-align: right;
+}
+
+.ribbon-caret {
+  float: right;
+  width: 0px;
+  height: 0px;
+  border-style: solid;
+  border-width: 75px 117px 0 0;
+  border-color: $neutralColor2 transparent transparent transparent;
+}
+// ---- ribbon module
+
+// ++++ text module
+.text-title {
+  color: $mainColor;
+  font-weight: 400;
+  font-size: 2.5em;
+}
+
+.text-light {
+  color: $neutralColor1;
+}
+// ---- text module
+
+// ++++ tooltip module
+.tooltipButtons {
+  position: absolute;
+  background-color: $neutralColor0;
+  padding: 10px;
+  @include border-radius(5px);
+  border: 2 px solid $neutralColor2;
+  @include box-sizing(border-box);
+  margin-top: 18px;
+  .triangle-up {
+    @include caret(top, bottom, 16px, $neutralColor0);
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    margin-left: -16px;
+  }
+}
+// ---- tooltip module
+
+// ++++ ui-resizable module
+.ui-resizable-handle {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  border: 20px dashed transparent;
+  border-right: 20px solid $mainColor;
+  border-bottom: 0;
+  height: 0;
+  width: 0;
+  background-image: none;
+}
+
+.ui-resizable-helper {
+  border: 2px dotted $mainColor;
+}
+// ---- ui-resizable module
+
+// ---- MODULES
+
+// ++++ THEMES
+// ---- THEMES
+
+// ++++ STATES
+// ---- STATES
