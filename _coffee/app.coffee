@@ -148,7 +148,7 @@ class App
         $(@_buttons.loadInput).val("").trigger("click")
 
       $(@_buttons.loadInput).on "change", (e) =>
-        file = $(this)[0].files[0]
+        file = `this.files[0]`
 
         reader = new FileReader()
         reader.onload = (e) =>

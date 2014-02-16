@@ -144,7 +144,7 @@
           });
           $(_this._buttons.loadInput).on("change", function(e) {
             var file, reader;
-            file = $(_this)[0].files[0];
+            file = this.files[0];
             reader = new FileReader();
             reader.onload = function(e) {
               var error, icon, jsonFile, loadedIcon, loadedIcons, _i, _len, _results;
