@@ -1,12 +1,12 @@
 class Space
   #
-  # private instance properties
+  # 'private' instance properties
   #
-  spaceWidth = 0
-  spaceHeight = 0
-  emptySpaces = [] #array which holds all the holes of space in this way width, height, top, left
-  biggestWidth = 0 #in px, max width occupied by an icon
-  biggestHeight = 0 #in px, max height occupied by an icon
+  _spaceWidth: 0
+  _spaceHeight: 0
+  _emptySpaces: [] #array which holds all the holes of space in this way width, height, top, left
+  _biggestWidth: 0 #in px, max width occupied by an icon
+  _biggestHeight: 0 #in px, max height occupied by an icon
 
   #
   # constructor
@@ -15,10 +15,10 @@ class Space
     unless width and height
       return false
 
-    spaceWidth = width
-    spaceHeight = height
+    @_spaceWidth = width
+    @_spaceHeight = height
 
-    emptySpaces.push
+    @_emptySpaces.push
       width: width
       height: height
       top: 0
@@ -31,18 +31,18 @@ class Space
     # clear the space
 
     #reset biggest width and height
-    biggestWidth = 0
-    biggestHeight = 0
+    @_biggestWidth = 0
+    @_biggestHeight = 0
 
     #set new width and height if defined
     if setWidth and setHeight
-      spaceWidth = setWidth
-      spaceHeight = setHeight
+      @_spaceWidth = setWidth
+      @_spaceHeight = setHeight
 
     #reset emptySpaces
-    emptySpaces = [
-      width: spaceWidth
-      height: spaceHeight
+    @_emptySpaces = [
+      width: @_spaceWidth
+      height: @_spaceHeight
       top: 0
       left: 0
     ]
@@ -52,7 +52,7 @@ class Space
   place: (elementWidth, elementHeight) ->
     # return the position in which draw the icon
     position = undefined
-    for emptySpace, i in emptySpaces
+    for emptySpace, i in @_emptySpaces
       #check the first free hole
 
       if elementHeight < emptySpace.height
@@ -64,7 +64,7 @@ class Space
           left: emptySpace.left
 
         #create a new hole
-        emptySpaces.splice(i, 0, {
+        @_emptySpaces.splice(i, 0, {
           width: emptySpace.width - elementWidth
           height: elementHeight
           top: emptySpace.top
@@ -72,7 +72,7 @@ class Space
         })
 
         #modify the existing hole
-        emptySpaces[i + 1] =
+        @_emptySpaces[i + 1] =
           width: emptySpace.width
           height: emptySpace.height - elementHeight
           top: emptySpace.top + elementHeight
@@ -88,7 +88,7 @@ class Space
           left: emptySpace.left
 
         #modify the existing hole
-        emptySpaces[i] =
+        @_emptySpaces[i] =
           width: emptySpace.width - elementWidth
           height: emptySpace.height
           top: emptySpace.top,
@@ -102,36 +102,36 @@ class Space
       return false
 
     #set the biggestHeight
-    if position.top + elementHeight > biggestHeight
-      biggestHeight = position.top + elementHeight
+    if position.top + elementHeight > @_biggestHeight
+      @_biggestHeight = position.top + elementHeight
 
     #set the biggestWidth
-    if position.left + elementWidth > biggestWidth
-      biggestWidth = position.left + elementWidth
+    if position.left + elementWidth > @_biggestWidth
+      @_biggestWidth = position.left + elementWidth
 
     return position
 
   fit: ->
     # fit the space to the images
-    spaceWidth = biggestWidth
-    message.setMessage("Space", "New space width: " + spaceWidth, "debug")
-    spaceHeight = biggestHeight
-    message.setMessage("Space", "New space height: " + spaceHeight, "debug")
+    @_spaceWidth = @_biggestWidth
+    message.setMessage("Space", "New space width: " + @_spaceWidth, "debug")
+    @_spaceHeight = @_biggestHeight
+    message.setMessage("Space", "New space height: " + @_spaceHeight, "debug")
 
     #modify emptySpaces
-    for emptySpace, i in emptySpaces
-      emptySpaces[i].width = spaceWidth - emptySpace.left if emptySpace.left + emptySpace.width > spaceWidth
-      emptySpaces[i].height = spaceHeight - emptySpace.top if emptySpace.top + emptySpace.height > spaceHeight
+    for emptySpace, i in @_emptySpaces
+      @_emptySpaces[i].width = @_spaceWidth - emptySpace.left if emptySpace.left + emptySpace.width > @_spaceWidth
+      @_emptySpaces[i].height = @_spaceHeight - emptySpace.top if emptySpace.top + emptySpace.height > @_spaceHeight
 
     return @
 
   getArea: ->
-    width: spaceWidth
-    height: spaceHeight
+    width: @_spaceWidth
+    height: @_spaceHeight
 
   deleteElement: (left, top, width, height) ->
     #create a new hole in emptySpaces
-    emptySpaces.unshift
+    @_emptySpaces.unshift
       width: width
       height: height
       top: top

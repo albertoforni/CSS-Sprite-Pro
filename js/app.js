@@ -546,34 +546,26 @@
   })();
 
   Message = (function() {
-    var $area, $title, debug, messages, mode, modePermittedStatus, production;
-
     window.Message = Message;
 
-    $area = {};
+    Message._production = "production";
 
-    $title = {};
+    Message._debug = "debug";
 
-    mode = "";
+    Message.prototype._modePermittedStatus = [Message._debug, Message._production];
 
-    production = "production";
-
-    debug = "debug";
-
-    modePermittedStatus = [debug, production];
-
-    messages = [];
+    Message.prototype._messages = [];
 
     function Message(params) {
       if (!params) {
         return false;
       }
-      $area = $(params.area);
-      $title = $(params.title);
-      if (_.contains(modePermittedStatus, params.mode)) {
-        mode = params.mode;
+      this._$area = $(params.area);
+      this._$title = $(params.title);
+      if (_.contains(this._modePermittedStatus, params.mode)) {
+        this._mode = params.mode;
       } else {
-        mode = production;
+        this._mode = Message._production;
       }
     }
 
@@ -583,37 +575,38 @@
         return false;
       }
       if (_.isUndefined(status)) {
-        status = production;
+        status = Message._production;
       }
-      if (messages.length === 0) {
-        $title.hide();
+      if (this._messages.length === 0) {
+        this._$title.hide();
       }
-      messages.push({
+      this._messages.push({
         sender: sender,
         message: message,
         status: status
       });
-      if (status === production || (status === debug && mode === debug)) {
+      if (status === Message._production || (status === Message._debug && this._mode === Message._debug)) {
         $message = $("<p class='message'>" + message + "</p>");
-        if ($area.find("p").length > 0) {
-          $area.find("p").first().before($message);
+        if (this._$area.find("p").length > 0) {
+          this._$area.find("p").first().before($message);
         } else {
-          $area.append($message);
+          this._$area.append($message);
         }
         return $message.hide().fadeIn();
       }
     };
 
     Message.prototype.getMessage = function(mode) {
-      var message, productionMessages, _i, _len, _results;
-      if (!mode || mode === debug) {
-        return messages;
+      var message, productionMessages, _i, _len, _ref, _results;
+      if (!mode || mode === Message._debug) {
+        return this._messages;
       } else {
         productionMessages = [];
+        _ref = this._messages;
         _results = [];
-        for (_i = 0, _len = messages.length; _i < _len; _i++) {
-          message = messages[_i];
-          if (message === production) {
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          message = _ref[_i];
+          if (message === Message._production) {
             _results.push(productionMessages.push(message));
           } else {
             _results.push(void 0);
@@ -628,25 +621,23 @@
   })();
 
   Space = (function() {
-    var biggestHeight, biggestWidth, emptySpaces, spaceHeight, spaceWidth;
+    Space.prototype._spaceWidth = 0;
 
-    spaceWidth = 0;
+    Space.prototype._spaceHeight = 0;
 
-    spaceHeight = 0;
+    Space.prototype._emptySpaces = [];
 
-    emptySpaces = [];
+    Space.prototype._biggestWidth = 0;
 
-    biggestWidth = 0;
-
-    biggestHeight = 0;
+    Space.prototype._biggestHeight = 0;
 
     function Space(width, height) {
       if (!(width && height)) {
         return false;
       }
-      spaceWidth = width;
-      spaceHeight = height;
-      emptySpaces.push({
+      this._spaceWidth = width;
+      this._spaceHeight = height;
+      this._emptySpaces.push({
         width: width,
         height: height,
         top: 0,
@@ -655,16 +646,16 @@
     }
 
     Space.prototype.clear = function(setWidth, setHeight) {
-      biggestWidth = 0;
-      biggestHeight = 0;
+      this._biggestWidth = 0;
+      this._biggestHeight = 0;
       if (setWidth && setHeight) {
-        spaceWidth = setWidth;
-        spaceHeight = setHeight;
+        this._spaceWidth = setWidth;
+        this._spaceHeight = setHeight;
       }
-      emptySpaces = [
+      this._emptySpaces = [
         {
-          width: spaceWidth,
-          height: spaceHeight,
+          width: this._spaceWidth,
+          height: this._spaceHeight,
           top: 0,
           left: 0
         }
@@ -673,10 +664,11 @@
     };
 
     Space.prototype.place = function(elementWidth, elementHeight) {
-      var emptySpace, i, position, _i, _len;
+      var emptySpace, i, position, _i, _len, _ref;
       position = void 0;
-      for (i = _i = 0, _len = emptySpaces.length; _i < _len; i = ++_i) {
-        emptySpace = emptySpaces[i];
+      _ref = this._emptySpaces;
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        emptySpace = _ref[i];
         if (elementHeight < emptySpace.height) {
           if (elementWidth > emptySpace.width) {
             continue;
@@ -685,13 +677,13 @@
             top: emptySpace.top,
             left: emptySpace.left
           };
-          emptySpaces.splice(i, 0, {
+          this._emptySpaces.splice(i, 0, {
             width: emptySpace.width - elementWidth,
             height: elementHeight,
             top: emptySpace.top,
             left: emptySpace.left + elementWidth
           });
-          emptySpaces[i + 1] = {
+          this._emptySpaces[i + 1] = {
             width: emptySpace.width,
             height: emptySpace.height - elementHeight,
             top: emptySpace.top + elementHeight,
@@ -706,7 +698,7 @@
             top: emptySpace.top,
             left: emptySpace.left
           };
-          emptySpaces[i] = {
+          this._emptySpaces[i] = {
             width: emptySpace.width - elementWidth,
             height: emptySpace.height,
             top: emptySpace.top,
@@ -719,28 +711,29 @@
         message.setMessage("Space", "Your image is too big for the actual canvas size. If you want to place that image you need to resize the cavans", "production");
         return false;
       }
-      if (position.top + elementHeight > biggestHeight) {
-        biggestHeight = position.top + elementHeight;
+      if (position.top + elementHeight > this._biggestHeight) {
+        this._biggestHeight = position.top + elementHeight;
       }
-      if (position.left + elementWidth > biggestWidth) {
-        biggestWidth = position.left + elementWidth;
+      if (position.left + elementWidth > this._biggestWidth) {
+        this._biggestWidth = position.left + elementWidth;
       }
       return position;
     };
 
     Space.prototype.fit = function() {
-      var emptySpace, i, _i, _len;
-      spaceWidth = biggestWidth;
-      message.setMessage("Space", "New space width: " + spaceWidth, "debug");
-      spaceHeight = biggestHeight;
-      message.setMessage("Space", "New space height: " + spaceHeight, "debug");
-      for (i = _i = 0, _len = emptySpaces.length; _i < _len; i = ++_i) {
-        emptySpace = emptySpaces[i];
-        if (emptySpace.left + emptySpace.width > spaceWidth) {
-          emptySpaces[i].width = spaceWidth - emptySpace.left;
+      var emptySpace, i, _i, _len, _ref;
+      this._spaceWidth = this._biggestWidth;
+      message.setMessage("Space", "New space width: " + this._spaceWidth, "debug");
+      this._spaceHeight = this._biggestHeight;
+      message.setMessage("Space", "New space height: " + this._spaceHeight, "debug");
+      _ref = this._emptySpaces;
+      for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
+        emptySpace = _ref[i];
+        if (emptySpace.left + emptySpace.width > this._spaceWidth) {
+          this._emptySpaces[i].width = this._spaceWidth - emptySpace.left;
         }
-        if (emptySpace.top + emptySpace.height > spaceHeight) {
-          emptySpaces[i].height = spaceHeight - emptySpace.top;
+        if (emptySpace.top + emptySpace.height > this._spaceHeight) {
+          this._emptySpaces[i].height = this._spaceHeight - emptySpace.top;
         }
       }
       return this;
@@ -748,13 +741,13 @@
 
     Space.prototype.getArea = function() {
       return {
-        width: spaceWidth,
-        height: spaceHeight
+        width: this._spaceWidth,
+        height: this._spaceHeight
       };
     };
 
     Space.prototype.deleteElement = function(left, top, width, height) {
-      return emptySpaces.unshift({
+      return this._emptySpaces.unshift({
         width: width,
         height: height,
         top: top,

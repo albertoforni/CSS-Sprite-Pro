@@ -4,14 +4,14 @@ class Message
   #
   # private instance properties
   #
-  $area = {}
-  $title = {}
+  # @_$area = {}
+  # @_$title = {}
 
-  mode = ""
-  production = "production"
-  debug = "debug"
-  modePermittedStatus = [debug, production]
-  messages = []
+  # @_mode = ""
+  @_production: "production"
+  @_debug: "debug"
+  _modePermittedStatus: [Message._debug, Message._production]
+  _messages: []
 
   #
   # constructor
@@ -20,40 +20,40 @@ class Message
     unless params
       return false
 
-    $area = $(params.area)
-    $title = $(params.title)
-    if _.contains(modePermittedStatus, params.mode)
-      mode = params.mode
+    @_$area = $(params.area)
+    @_$title = $(params.title)
+    if _.contains(@_modePermittedStatus, params.mode)
+      @_mode = params.mode
     else
-      mode = production
+      @_mode = Message._production
 
   setMessage: (sender, message, status) ->
     unless sender and message
       return false
 
-    if _.isUndefined(status) then status =  production
+    if _.isUndefined(status) then status =  Message._production
 
-    $title.hide() if messages.length is 0
+    @_$title.hide() if @_messages.length is 0
 
-    messages.push
+    @_messages.push
       sender: sender
       message: message
       status: status
 
-    if status is production or (status is debug and mode is debug)
+    if status is Message._production or (status is Message._debug and @_mode is Message._debug)
       $message = $("<p class='message'>#{message}</p>")
-      if $area.find("p").length > 0
-        $area.find("p").first().before($message)
+      if @_$area.find("p").length > 0
+        @_$area.find("p").first().before($message)
       else
-        $area.append($message)
+        @_$area.append($message)
       $message.hide().fadeIn()
 
   getMessage: (mode) ->
-    if not mode or mode is debug
+    if not mode or mode is Message._debug
       #return all messages [default]
-      return messages
+      return @_messages
     else
       #return just the production messages
       productionMessages = []
-      for message in messages
-        productionMessages.push(message) if message is production
+      for message in @_messages
+        productionMessages.push(message) if message is Message._production
