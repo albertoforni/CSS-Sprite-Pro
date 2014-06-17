@@ -3,3 +3,4 @@
 *.map
 *.src.coffee
 .DS_Store
+node_modules
