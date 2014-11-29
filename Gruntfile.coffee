@@ -1,40 +1,56 @@
 module.exports = (grunt) ->
-  grunt.loadNpmTasks('grunt-contrib-coffee')
-  grunt.loadNpmTasks('grunt-contrib-watch')
-  grunt.loadNpmTasks('grunt-contrib-compass')
-  grunt.loadNpmTasks('grunt-contrib-haml')
+  # load all grunt tasks matching the `grunt-*` pattern
+  require('load-grunt-tasks')(grunt)
 
   grunt.initConfig
     watch:
-      coffee:
-        files: '_coffee/*.coffee'
-        tasks: ['coffee:compileJoined']
+      coffeeify:
+        files: 'app/coffee/*.coffee'
+        tasks: ['coffeeify:dev']
       compass:
-        files: '_scss/styles.scss'
-        tasks: ['compass:dist']
+        files: 'app/scss/*.scss'
+        tasks: ['sass:dev']
       haml:
-        files: '_haml/index.haml'
-        tasks: ['haml:dist']
+        files: 'app/haml/index.haml'
+        tasks: ['haml:dev']
 
-    coffee:
-      compileJoined:
+    clean:
+      dev: ['dev']
+
+    coffeeify:
+      dev:
+        cwd:  'app/coffee'
+        src:  ['app.coffee']
+        dest: 'dev/js'
+
+    sass:
+      dev:
         options:
-          join: true
-          sourceMap: true
+          style: 'expanded'
         files:
-          'js/app.js': '_coffee/*.coffee'
-
-    compass:
-      dist:
-        options:
-          config: 'config.rb'
-          sassDir: '_scss',
-          cssDir: 'css',
-          environment: 'production'
+          'dev/css/style.css': 'app/scss/style.scss'
 
     haml:
-      dist:
+      dev:
         files:
-          'index.html': '_haml/index.haml'
+          'dev/index.html': 'app/haml/index.haml'
 
-  grunt.registerTask 'default', ['watch']
+    connect:
+      server:
+        options:
+          port: 9001
+          base: 'dev'
+          keepalive: true
+          open: true
+
+    concurrent:
+      target:
+        tasks: ['watch', 'connect']
+        options:
+          logConcurrentOutput: true
+
+  grunt.registerTask 'serve', [
+    'concurrent'
+  ]
+
+  grunt.registerTask 'default', ['serve']
