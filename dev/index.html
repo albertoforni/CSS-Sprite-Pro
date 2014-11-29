@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang='en'></html>
+<head>
+  <meta charset='UTF-8'>
+  <title>CSS Sprite Pro</title>
+  <link href='https://fonts.googleapis.com/css?family=Raleway:400,300,700' rel='stylesheet'>
+  <link href='https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css' rel='stylesheet'>
+  <link href='css/codeStyle.css' rel='stylesheet'>
+  <link href='css/guiders.css' rel='stylesheet'>
+  <link href='css/styles.css' rel='stylesheet'>
+</head>
+<body>
+  <!--[if lt IE 7]>
+  <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+  <![endif]-->
+  <hr class='line-fat'>
+  <div class='l-container'>
+    <header class='l-row'>
+      <div class='l-col4'>
+        <h1 class='text-title'>CSS Sprite Pro</h1>
+      </div>
+      <ul class='l-pull-right horizontal-list' id='links'>
+        <li class='horizontal-list-el'>
+          <a class='l-hidden horizontal-list-el-innerContent' href='http://www.albertoforni.com' target='_blank'>@albertoforni</a>
+          <a class='l-hidden horizontal-list-el-innerContent' href='http://www.saramichelazzo.com' target='_blank'>@SaraMichelazzo</a>
+          <span class='horizontal-list-el-innerContent js-menuElement'>follow us</span>
+        </li>
+        <li class='horizontal-list-el'>
+          <a class='horizontal-list-el-innerContent' href='https://www.gittip.com/albertoforni' target='_blank'>donate</a>
+        </li>
+        <li class='horizontal-list-el'>
+          <a class='horizontal-list-el-innerContent' href='#' id='help' target='_blank'>help</a>
+        </li>
+      </ul>
+    </header>
+    <div class='l-row'>
+      <div class='l-col8' id='messagesContainer'>
+        <div class='messages' id='messages'>
+          <span class='messages-title'>&#123; Messages &#125;</span>
+        </div>
+      </div>
+      <section class='l-col4' id='actions'>
+        <div class='button button-link' id='downloadLink'>Download</div>
+      </section>
+    </div>
+    <section class='l-row' id='mainSection'>
+      <div class='l-row l-noMargin'>
+        <div class='col8 actionsButtons'>
+          <span class='actionsButtons-action' id='fit'>Fit</span>
+          <span class='actionsButtons-action' id='convert'>Convert</span>
+          <span class='actionsButtons-action' id='clear'>Clear</span>
+          <span class='actionsButtons-action' id='save'>Save</span>
+          <span class='actionsButtons-action' id='load'>Load</span>
+          <input accept='application/json' class='actionsButtons-action l-hidden' id='loadInput' type='file' value='Load'>
+        </div>
+      </div>
+      <div class='l-row'>
+        <section class='l-col8 canvas-container'>
+          <div class='canvas-background'>
+            <span class='canvas-title'>Drag & Drop Icons</span>
+          </div>
+          <canvas class='canvas-element' height='400' id='prevArea' width='600'>
+            <p>Your browser does not support html5 canvas</p>
+          </canvas>
+          <p class='canvas-updates l-hidden'></p>
+          <div class='tooltipButtons l-hidden' id='canvasIconsActions'>
+            <span class='triangle-up'></span>
+            <span class='button' id='deleteIcon'>Delete</span>
+          </div>
+        </section>
+        <aside class='code l-col4' id='codeArea'>
+          <span class='code-title'>Get Code</span>
+          <ul class='code-select is-closed' id='codeStyle'>
+            <li class='code-select-el selected' data-value='css'>css</li>
+            <li class='code-select-el' data-value='sass'>Sass</li>
+            <li class='code-select-el' data-value='scss'>Scss</li>
+            <li class='code-select-el' data-value='less'>less</li>
+          </ul>
+          <span class='code-placeholder'>{ }</span>
+          <pre class='l-hidden' id='code'><code></code></pre>
+        </aside>
+      </div>
+    </section>
+    <footer class='l-row l-noMargin'>
+      <div class='ribbon-top'></div>
+      <div class='ribbon-bottom'>
+        <div class='ribbon-text'>Made in Italy with love</div>
+        <div class='ribbon-caret'></div>
+      </div>
+    </footer>
+    <script src='//ajax.googleapis.com/ajax/libs/jquery/2.0.1/jquery.min.js'></script>
+    <script src='//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js'></script>
+    <script src='js/plugins.js'></script>
+    <script src='js/vendor/handlebars.js'></script>
+    <script src='js/vendor/rainbow.min.js'></script>
+    <script src='js/vendor/language/generic.js'></script>
+    <script src='js/vendor/language/css.js'></script>
+    <script src='js/vendor/underscore.min.js'></script>
+    <script src='js/vendor/guiders.js'></script>
+    <script src='js/guiders.js'></script>
+    <script src='js/vendor/Blob.js'></script>
+    <script src='js/vendor/canvas-toBlob.js'></script>
+    <script src='js/vendor/FileSaver.js'></script>
+    <script src='js/icon.js'></script>
+    <script src='js/app.js'></script>
+    <script src='js/config.js'></script>
+    <script>
+      var _gaq=[['_setAccount','UA-44058621-1'],['_trackPageview']];
+      (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+      g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+      s.parentNode.insertBefore(g,s)}(document,'script'));
+    </script>
+  </div>
+</body>

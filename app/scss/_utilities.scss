@@ -1,0 +1,18 @@
+@mixin caret($point, $opposite, $border: 5px, $color: #ccc) {
+  border: $border dashed transparent;
+  border-#{$opposite}: $border solid $color;
+  border-#{$point}: 0;
+  height: 0;
+  width: 0;
+}
+
+@mixin clearfix(){
+  *zoom: 1;
+  &:after, &:before {
+    content: " ";
+    display: table;
+  }
+  &:after {
+    clear: both;
+  }
+}
