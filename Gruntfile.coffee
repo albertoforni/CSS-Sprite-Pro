@@ -4,6 +4,8 @@ module.exports = (grunt) ->
 
   grunt.initConfig
     watch:
+      options:
+        livereload: true
       coffeeify:
         files: 'app/coffee/*.coffee'
         tasks: ['coffeeify:dev']
@@ -17,6 +19,8 @@ module.exports = (grunt) ->
       haml:
         files: 'app/haml/index.haml'
         tasks: ['haml:dev']
+        options:
+          spawn: false
 
     clean:
       dev: ['dev']
@@ -51,17 +55,26 @@ module.exports = (grunt) ->
         options:
           port: 9001
           base: 'dev'
-          keepalive: true
+          livereload: true
           open: true
 
-    concurrent:
-      target:
-        tasks: ['watch', 'connect']
-        options:
-          logConcurrentOutput: true
+  grunt.registerTask 'compile', 'Compile all the assets', (type = 'dev') ->
+    grunt.task.run [
+      "coffeeify:#{type}"
+      "sass:#{type}"
+      "haml:#{type}"
+    ]
 
   grunt.registerTask 'serve', [
-    'concurrent'
+    'clean:dev'
+    'compile'
+    'bower_concat'
+    'connect'
+    'watch'
   ]
+
+  grunt.registerTask 'build', ->
+    console.log "Not implemented yet"
+
 
   grunt.registerTask 'default', ['serve']
