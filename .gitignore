@@ -4,3 +4,6 @@
 *.src.coffee
 .DS_Store
 node_modules
+bower_components
+dev
+build
