@@ -7,9 +7,13 @@ module.exports = (grunt) ->
       coffeeify:
         files: 'app/coffee/*.coffee'
         tasks: ['coffeeify:dev']
-      compass:
+        options:
+          spawn: false
+      sass:
         files: 'app/scss/*.scss'
         tasks: ['sass:dev']
+        options:
+          spawn: false
       haml:
         files: 'app/haml/index.haml'
         tasks: ['haml:dev']

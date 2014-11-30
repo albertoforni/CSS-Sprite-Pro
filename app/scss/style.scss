@@ -1,7 +1,7 @@
-/* @import "compass"; */
 // SMACSS APROACH
 
 // ++++ BASE
+@import "css3mixins";
 @import "utilities";
 
 // ++++ Colors
@@ -78,7 +78,7 @@ $maxWidth: 1170px; //default null
   cursor: pointer;
   background-color: $neutralColor0;
   color: $neutralColor1;
-  /* @include single-transition(all, 200ms, ease-in-out); */
+  @include transition(all, 200ms, ease-in-out);
   &:hover {
     background-color: lighten($neutralColor0, 20%);
   }
@@ -106,10 +106,10 @@ $maxWidth: 1170px; //default null
   padding: 0.6em;
 
   font-size: 2em;
-  /* @include box-shadow(7px 7px 0 0 \$neutralColor0); */
-  /* @include single-transition(all, 200ms, ease-in-out); */
+  @include box-shadow(7px 7px 0 0 $neutralColor0);
+  @include transition(all, 200ms, ease-in-out);
   &:hover {
-    /* @include box-shadow(3px 3px 0 0 \$neutralColor0); */
+    @include box-shadow(3px 3px 0 0 $neutralColor0);
   }
 }
 // ---- button module
@@ -161,7 +161,7 @@ $canvas-margin: 15px;
   margin-top: -25px;
   margin-left: -100px;
 
-  /* @include border-radius(5px); */
+  @include border-radius(5px);
   text-align: center;
   background-color: $neutralColor0;
   opacity: 0.5;
@@ -192,7 +192,7 @@ $canvas-margin: 15px;
   width: 70%;
   margin: 10px auto;
   border: none;
-  /* @include border-radius(5px); */
+  @include border-radius(5px);
 
   background-color: #bbbbbb;
   text-align: center;
@@ -231,7 +231,7 @@ $canvas-margin: 15px;
   text-align: center;
   margin-right: 5px;
   vertical-align: top;
-  /* @include border-radius(0 0 5px 5px); */
+  @include border-radius(0 0 5px 5px);
   overflow: hidden;
   &:last-child {
     margin-right: 0;
@@ -245,7 +245,7 @@ $canvas-margin: 15px;
   color: $neutralColor1;
   cursor: pointer;
   background-color: $neutralColor0;
-  /* @include single-transition(background-color, 200ms, ease-in-out); */
+  @include transition(background-color, 200ms, ease-in-out);
   &:hover {
     background-color: lighten($neutralColor0, 20%);
   }
@@ -273,7 +273,7 @@ $canvas-margin: 15px;
   width: 630px;
   background-color: $neutralColor2;
   padding: 1em;
-  /* @include box-sizing(border-box); */
+  @include box-sizing(border-box);
 }
 
 .messages-title {
@@ -310,7 +310,7 @@ $canvas-margin: 15px;
 
   width: 90%;
   height: 75px;
-  /* @include box-sizing(border-box); */
+  @include box-sizing(border-box);
   padding-right: 15px;
 
   line-height: 75px;
@@ -346,12 +346,12 @@ $canvas-margin: 15px;
   position: absolute;
   background-color: $neutralColor0;
   padding: 10px;
-  /* @include border-radius(5px); */
+  @include border-radius(5px);
   border: 2 px solid $neutralColor2;
-  /* @include box-sizing(border-box); */
+  @include box-sizing(border-box);
   margin-top: 18px;
   .triangle-up {
-    @include caret(top, bottom, 16px, \\$neutralColor0);
+    @include caret(top, 16px, \\$neutralColor0);
     position: absolute;
     top: -16px;
     left: 50%;

@@ -1,0 +1,37 @@
+// CSS3
+@mixin transition ($property: all, $duration: 400ms, $timing-function: ease-out, $delay: null) {
+  -webkit-transition: $property $duration $timing-function $delay;
+  -moz-transition: $property $duration $timing-function $delay;
+  -o-transition: $property $duration $timing-function $delay;
+  transition: $property $duration $timing-function $delay;
+}
+
+@mixin box-shadow ($params) {
+  -webkit-box-shadow: $params;
+  -moz-box-shadow:    $params;
+  box-shadow:         $params;
+}
+
+@mixin border-radius ($params) {
+  -webkit-border-radius: $params;
+  border-radius: $params;
+}
+
+@mixin box-sizing ($type: border-box) {
+  -moz-box-sizing: $type;
+  -webkit-box-sizing: $type;
+  box-sizing: $type;
+}
+
+// Opposite
+@function opposite($side) {
+  @if $side == top {
+    @return bottom;
+  } @else if $side == right {
+    @return left;
+  } @else if $side == bottom {
+    @return top;
+  } @else {
+    @return right;
+  }
+}

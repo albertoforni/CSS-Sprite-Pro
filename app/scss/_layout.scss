@@ -31,7 +31,7 @@
     margin-left: $gutter;
     min-height: 30px;
     float: left;
-    /* @include box-sizing(border-box); */
+    @include box-sizing(border-box);
   }
 
   .l-row [class*="l-col"]:first-child {
