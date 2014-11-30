@@ -1,0 +1,30 @@
+{
+  "name": "CSS-Sprite-Pro",
+  "version": "2.0.0",
+  "homepage": "https://github.com/albertodotcom/CSS-Sprite-Pro",
+  "authors": [
+    "Alberto Forni <alberto.forn@gmail.com>"
+  ],
+  "description": "An application that allows users to create CSS Sprites quickly and easily",
+  "moduleType": [
+    "amd"
+  ],
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery-ui": "~1.11.2",
+    "normalize.css": "~3.0.2",
+    "jquery": "~2.1.1",
+    "canvas2image": "*",
+    "blob": "*",
+    "rainbow": "~1.1.9",
+    "FileSaver": "*"
+  }
+}

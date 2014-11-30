@@ -35,6 +35,13 @@ module.exports = (grunt) ->
         files:
           'dev/index.html': 'app/haml/index.haml'
 
+    bower_concat:
+      main:
+        dest: "dev/js/_bower.js"
+        cssDest: "dev/css/_bower.css"
+        mainFiles:
+          rainbow: ['js/rainbow.js', 'js/language/css.js']
+
     connect:
       server:
         options:
