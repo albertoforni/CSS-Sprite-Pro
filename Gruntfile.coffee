@@ -58,6 +58,12 @@ module.exports = (grunt) ->
           livereload: true
           open: true
 
+    copy:
+      dev:
+        files: [
+          {expand: true, flatten: true, src: ['app/resources/*'], dest: 'dev/resources', filter: 'isFile'}
+        ]
+
   grunt.registerTask 'compile', 'Compile all the assets', (type = 'dev') ->
     grunt.task.run [
       "coffeeify:#{type}"
@@ -69,6 +75,7 @@ module.exports = (grunt) ->
     'clean:dev'
     'compile'
     'bower_concat'
+    'copy'
     'connect'
     'watch'
   ]
