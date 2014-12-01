@@ -1,7 +1,12 @@
+###
+Handle the images placement
+
+###
 class Space
-  #
-  # 'private' instance properties
-  #
+  ###
+
+
+  ###
   _spaceWidth: 0
   _spaceHeight: 0
   _emptySpaces: [] #array which holds all the holes of space in this way width, height, top, left
@@ -136,3 +141,5 @@ class Space
       height: height
       top: top
       left: left
+
+module.exports = {Space}
