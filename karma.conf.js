@@ -10,7 +10,7 @@ module.exports = function(config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['browserify', 'mocha', 'sinon-expect'],
+    frameworks: ['browserify', 'mocha', 'chai'],
 
     browserify: {
       debug: true,

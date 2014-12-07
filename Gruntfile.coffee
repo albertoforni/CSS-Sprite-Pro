@@ -64,6 +64,10 @@ module.exports = (grunt) ->
           {expand: true, flatten: true, src: ['app/resources/*'], dest: 'dev/resources', filter: 'isFile'}
         ]
 
+    shell:
+      test:
+        command: './node_modules/karma/bin/karma start'
+
   grunt.registerTask 'compile', 'Compile all the assets', (type = 'dev') ->
     grunt.task.run [
       "coffeeify:#{type}"
@@ -83,5 +87,8 @@ module.exports = (grunt) ->
   grunt.registerTask 'build', ->
     console.log "Not implemented yet"
 
+  grunt.registerTask 'test', [
+    'shell:test'
+  ]
 
   grunt.registerTask 'default', ['serve']
