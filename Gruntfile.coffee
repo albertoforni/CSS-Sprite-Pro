@@ -24,6 +24,7 @@ module.exports = (grunt) ->
 
     clean:
       dev: ['dev']
+      docs: ['doc']
 
     coffeeify:
       dev:
@@ -67,6 +68,12 @@ module.exports = (grunt) ->
     shell:
       test:
         command: './node_modules/karma/bin/karma start'
+      docs:
+        command: './node_modules/codo/bin/codo ./app/ --cautious'
+
+    open:
+      docs:
+        path: './doc/index.html'
 
   grunt.registerTask 'compile', 'Compile all the assets', (type = 'dev') ->
     grunt.task.run [
@@ -89,6 +96,12 @@ module.exports = (grunt) ->
 
   grunt.registerTask 'test', [
     'shell:test'
+  ]
+
+  grunt.registerTask 'docs', [
+    'clean:docs'
+    'shell:docs'
+    'open:docs'
   ]
 
   grunt.registerTask 'default', ['serve']
