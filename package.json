@@ -46,6 +46,7 @@
     "mocha": "^2.0.1"
   },
   "dependencies": {
-    "rsvp": "^3.0.14"
+    "rsvp": "^3.0.14",
+    "underscore": "^1.7.0"
   }
 }
