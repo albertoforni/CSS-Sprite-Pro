@@ -69,9 +69,7 @@ class Space
 
   @param [Number] elementWidth
   @param [Number] elementHeight
-  @return [Promise]
-    resolve position
-    reject
+  @return [Promise] resolve(position), reject(message)
   ###
   place: (elementWidth, elementHeight) ->
     new RSVP.Promise (resolve, reject) =>
@@ -170,7 +168,7 @@ class Space
   ###
   Trim out the extra space fitting the space to the biggest width and height
 
-  @return [Promise]
+  @return [Promise] resolve(null)
   ###
   fit: ->
     new RSVP.Promise (resolve) =>
@@ -188,9 +186,7 @@ class Space
   ###
   Get the width and the height of the space
 
-  @return [Object]
-    width: [Number]
-    height: [Number]
+  @return [Object] { width: [Number], height: [Number] }
   ###
   getArea: ->
     width: @_spaceWidth
