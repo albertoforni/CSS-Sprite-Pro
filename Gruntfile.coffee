@@ -69,7 +69,7 @@ module.exports = (grunt) ->
       test:
         command: './node_modules/karma/bin/karma start'
       docs:
-        command: './node_modules/codo/bin/codo ./app/ --cautious'
+        command: './node_modules/codo/bin/codo ./app/coffee/ --cautious'
 
     open:
       docs:
