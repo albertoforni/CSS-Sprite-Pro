@@ -4,10 +4,10 @@ RSVP = require 'RSVP'
 describe 'Space', ->
   describe '#constructor', ->
     it 'it return an error if width and or height are not numbers', ->
-      expect(-> throw new Error()).to.throw(Error)
-      expect(-> throw new Error(1, null)).to.throw(Error)
-      expect(-> throw new Error(null, 1)).to.throw(Error)
-      expect(-> throw new Error("1", "1")).to.throw(Error)
+      expect(-> new Space()).to.throw(Error)
+      expect(-> new Space(1, null)).to.throw(Error)
+      expect(-> new Space(null, 1)).to.throw(Error)
+      expect(-> new Space("1", "1")).to.throw(Error)
 
     it 'creates an instance of Space', ->
       space = new Space(200, 300)
