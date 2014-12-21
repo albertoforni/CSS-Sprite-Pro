@@ -1,4 +1,4 @@
-{Utils, ENV} = require './Utils'
+{Utils, ENV} = require './utils'
 RSVP = require 'RSVP'
 
 ###
