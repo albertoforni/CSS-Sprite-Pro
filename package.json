@@ -4,7 +4,7 @@
   "description": "an application that allows users to create CSS Sprites quickly and easily",
   "main": "index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "./node_modules/grunt-cli/bin/grunt test:travis"
   },
   "repository": {
     "type": "git",

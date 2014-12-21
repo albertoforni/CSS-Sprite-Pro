@@ -68,6 +68,8 @@ module.exports = (grunt) ->
     shell:
       test:
         command: './node_modules/karma/bin/karma start'
+      testTravis:
+        command: './node_modules/karma/bin/karma start --single-run --browsers PhantomJS'
       docs:
         command: './node_modules/codo/bin/codo ./app/coffee/ --cautious'
 
@@ -94,9 +96,15 @@ module.exports = (grunt) ->
   grunt.registerTask 'build', ->
     console.log "Not implemented yet"
 
-  grunt.registerTask 'test', [
-    'shell:test'
-  ]
+  grunt.registerTask 'test', (target) ->
+    if target is 'travis'
+      grunt.task.run [
+        'shell:testTravis'
+      ]
+    else
+      grunt.task.run [
+        'shell:test'
+      ]
 
   grunt.registerTask 'docs', [
     'clean:docs'
