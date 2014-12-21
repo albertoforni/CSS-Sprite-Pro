@@ -1,5 +1,4 @@
 {Code} = require '../app/coffee/code'
-RSVP = require 'RSVP'
 
 describe 'Code', ->
   describe '._template', ->
