@@ -1,3 +1,13 @@
+{Utils, ENV} = require './utils'
+_ = require 'underscore'
+RSVP = require 'RSVP'
+
+{Templates} = require './templates'
+
+###
+Create the code with a specific format, based on a template
+
+###
 class Code
   #
   # 'private' instance properties
@@ -17,27 +27,26 @@ class Code
   _numElementsCounter: 1
   _addingArray: []
 
-  #
-  # 'private' class properties
-  #
+  ###
+  The possible formats
+
+  @property [Array<String>]
+  @private
+  ###
   @_formatArray: ["css", "less", "scss", "sass"]
-  @_template:
-    css:
-      start: "i {\n  background-image: url('{{fileName}}.png');\n  display: inline-block;\n}\n"
-      block: "i.{{name}}  {\n  background-position: {{#if left}}-{{/if}}{{left}}px {{#if top}}-{{/if}}{{top}}px;\n  height: {{height}}px;\n  width: {{width}}px;\n}\n"
-      end: " \n"
-    scss:
-      start: "i {\n  background-image: url('cssspritepro.png');\n  display: inline-block;\n"
-      block: "  &.{{name}} {\n   background-position: {{#if left}}-{{/if}}{{left}}px {{#if top}}-{{/if}}{{top}}px;\n   height: {{height}}px;\n   width: {{width}}px;\n  }\n"
-      end: "}\n"
-    less:
-      start: "i {\n  background-image: url('cssspritepro.png');\n  display: inline-block;\n"
-      block: "  &.{{name}} {\n   background-position: {{#if left}}-{{/if}}{{left}}px {{#if top}}-{{/if}}{{top}}px;\n   height: {{height}}px;\n   width: {{width}}px;\n  }\n"
-      end: "}\n"
-    sass:
-      start: "i \n  background-image: url('cssspritepro.png');\n  display: inline-block\n"
-      block: "  &.{{name}} \n   background-position: {{#if left}}-{{/if}}{{left}}px {{#if top}}-{{/if}}{{top}}px\n   height: {{height}}px\n   width: {{width}}px\n  \n"
-      end: " \n"
+
+  @_getTemplate: (format, type, params = {}) ->
+    Utils.assert 'format must be contained in _formatArray', _.contains(Code._formatArray, format)
+
+    Utils.assert 'type must be a string', typeof type is 'string'
+
+    Utils.assert "Code[#{format}][#{type}] must be defined", Templates[format][type]?
+
+    Utils.assert 'params must be an Object', typeof params is 'object'
+
+    Templates.get("#{format}.#{type}", params)
+
+
 
   @_psudoClasses: ["link", "visited", "hover", "active"]
 
@@ -194,3 +203,5 @@ class Code
     html += templ(element) for element in elements
 
     return html += Code._template[@format].end
+
+module.exports = {Code}
