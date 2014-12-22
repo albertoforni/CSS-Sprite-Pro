@@ -46,7 +46,7 @@
     "mocha": "^2.0.1"
   },
   "dependencies": {
-    "rsvp": "3.0.13",
+    "rsvp": "git://github.com/albertodotcom/rsvp.js.git#prod",
     "underscore": "^1.7.0"
   }
 }
